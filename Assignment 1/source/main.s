@@ -4,8 +4,11 @@
 // Main function called by the program
 .global main
 main:
+    // Stores the existing variable registers to the stack to abide to the APCS
+    push        {r4, r9, r10, fp, lr}               // Pushes the specified registers to the stack to preserve them
+
     // Sets a local name for the register containing the base GPIO address
-    gpioBase    .req        r10                     // Creates an alias for the spcecified register to be called using
+    gpioBase    .req        r10                     // Creates an alias for the base GPIO address register
 
     // Initializes the GPIO base address pointer
     ldr         r0, =gpioPointer
@@ -34,16 +37,36 @@ main:
     mov         r2, #0xb001                         // Passes in the pin mode as a parameter
     bl          initGPIO                            // Calls the function to set the GPIO pin's status
 
-// Function that is run till it is terminated or branched out of
-loopedProgram:
-    bl          readSNES                            // Calls the function to read the SNES controller's input
+    // Prints out requesting a button to be pressed
+    ldr         r0, =requestButton                  // Passes in the request button string and makes sure it is null terminated
+    bl          printf                              // Calls the function to print to the console
 
-    // Calls the appropriate button's function depending on what was pressed
-    ldr         r1, =buttonsList                    // Loads the list containing locations for all the buttons
-    ldr         r0, [r1, r0, lsl #2]                // Shifts across the list to call the appropriate button's function (2 bytes shift since word aligned list)
-//    bleq        printf                              // Calls the function to print to the console
+    // Function that is run forever in a loop
+    mov         r9, #12                             // Stores the previously pressed button
+    loopedProgram:
+        bl      readSNES                            // Calls the function to read the SNES controller's input
 
-    bl          loopedProgram                       // Calls itself to keep looping
+        // Calls the appropriate button's function depending on what was pressed
+        eor     r0, #0x000F0000                     // Bit mask to ignore the 4 unused SNES controller button bits
+        mvn     r0, r0                              // Takes the 1's complement to invert all the bits
+        clz     r1, r0                              // Counts the number of leading zeroes in the button status list to determine the button that was pressed with the most significant bit
+        cmp     r1, r9                              // Checks to see if the button currently being pressed was also being pressed before
+        bleq    duplicateButton                     // Skips printing out if the button was previously pressed
+        mov     r9, r1                              // Stores which button is currently being pressed
+        ldr     r0, =buttonsList                    // Loads the list containing locations for all the buttons
+        ldr     r0, [r0, r9, lsl #2]                // Shifts across the list to call the appropriate button's function (2 bytes shift since word aligned list)
+        bl      printf                              // Calls the function to print to the console
+
+        // Calls the end of the program function or requests for another button depending on what was pressed
+        cmp     r9, #3                              // Checks to see if the Start button has been pressed
+        beq     endProgram                          // Calls the function to end the program
+        cmp     r9, #12                             // Checks to see if the previous button was just depressed to prevent a repeated print
+        ldrne   r0, =requestButton                  // Passes in the request button string and makes sure it is null terminated
+        blne    printf                              // Calls the function to print to the console
+        duplicateButton:
+
+        // Loops the program
+        bl      loopedProgram                       // Calls itself to keep looping
 
 // Function to initialize the passed in GPIO pin in the passed in mode
 // PARAMS:
@@ -56,7 +79,7 @@ initGPIO:
     // Stores the number of bits each pin has
     mov         r4, #3                              // Bits per pin
 
-    // Determines which function select register needs to be used as well as the passed in GPIO's pin offset
+    // Determines which function select register needs to be used as well as the passed in GPIO pin's offset
     functionSelect1Test:
         cmp     r1, #10                             // Checks to see if the GPIO pin specified is on the first Function Select Register
         bge     functionSelect2Test                 // Branches to the next Function Select Register's test if it is outside the current's range
@@ -67,7 +90,7 @@ initGPIO:
         mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
         orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
         str     r5, [gpioBase]                      // Applies the changes to the specified GPIO pin by saving to memory
-        b       endfunctionSelectTest               // Branches to the end of the function select register tests
+        bl      endfunctionSelectTest               // Branches to the end of the function select register tests
     functionSelect2Test:
         cmp     r1, #20                             // Checks to see if the GPIO pin specified is on the second Function Select Register
         bge     functionSelect3Test                 // Branches to the next Function Select Register's test if it is outside the current's range
@@ -79,7 +102,7 @@ initGPIO:
         mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
         orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
         str     r5, [gpioBase, #0x4*1]              // Applies the changes to the specified GPIO pin by saving to memory
-        b       endfunctionSelectTest               // Branches to the end of the function select register tests
+        bl      endfunctionSelectTest               // Branches to the end of the function select register tests
     functionSelect3Test:
         cmp     r1, #30                             // Checks to see if the GPIO pin specified is on the third Function Select Register
         bge     functionSelect4Test                 // Branches to the next Function Select Register's test if it is outside the current's range
@@ -91,7 +114,7 @@ initGPIO:
         mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
         orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
         str     r5, [gpioBase, #0x4*2]              // Applies the changes to the specified GPIO pin by saving to memory
-        b       endfunctionSelectTest               // Branches to the end of the function select register tests
+        bl      endfunctionSelectTest               // Branches to the end of the function select register tests
     functionSelect4Test:
         cmp     r1, #40                             // Checks to see if the GPIO pin specified is on the fourth Function Select Register
         bge     functionSelect5Test                 // Branches to the next Function Select Register's test if it is outside the current's range
@@ -103,7 +126,7 @@ initGPIO:
         mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
         orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
         str     r5, [gpioBase, #0x4*3]              // Applies the changes to the specified GPIO pin by saving to memory
-        b       endfunctionSelectTest               // Branches to the end of the function select register tests
+        bl      endfunctionSelectTest               // Branches to the end of the function select register tests
     functionSelect5Test:
         cmp     r1, #50                             // Checks to see if the GPIO pin specified is on the fifth Function Select Register
         bge     functionSelect6Test                 // Branches to the next Function Select Register's test if it is outside the current's range
@@ -115,7 +138,7 @@ initGPIO:
         mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
         orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
         str     r5, [gpioBase, #0x4*4]              // Applies the changes to the specified GPIO pin by saving to memory
-        b       endfunctionSelectTest               // Branches to the end of the function select register tests
+        bl      endfunctionSelectTest               // Branches to the end of the function select register tests
     functionSelect6Test:
         cmp     r1, #54                             // Checks to see if the GPIO pin specified is on the sixth Function Select Register
         bge     endfunctionSelectTest               // Branches to the end of the tests if it is outside the current's range
@@ -127,7 +150,7 @@ initGPIO:
         mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
         orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
         str     r5, [gpioBase, #0x4*5]              // Applies the changes to the specified GPIO pin by saving to memory
-        b       endfunctionSelectTest               // Branches to the end of the function select register tests
+        bl      endfunctionSelectTest               // Branches to the end of the function select register tests
     endfunctionSelectTest:
         // Pops the stored existing variable registers from the stack to abide to the APCS
         pop     {r4, r5, r6, r7, fp, lr}            // Pops the specified registers from the stack to preserve them
@@ -215,19 +238,16 @@ readSNES:
         mov     r0, #6                              // Passes in the value to set to the GPIO pin as a parameter
         bl      delayMicroseconds                   // Calls the function to delay program progression
 
-        // Reads GPIO pin 10 (Data) at bit corresponding the loop counter
+        // Reads GPIO pin 10 (Data) at the bit corresponding to the loop counter
         bl      readData                            // Calls the function to read the data pin
-        mov     r5, r0
+        mov     r1, r4                              // Stores the loop iteration counter's value
+        add     r1, #1                              // Increments the loop iteration counter by 1
+        ror     r0, r1                              // Shifts the bit response to the appropriate location to update the appropriate bit
+        orr     r5, r0                              // Applies the bit mask and stores the button's status into the list
 
         // Sets GPIO pin 11 (Clock) to 1
         mov     r0, #1                              // Passes in the value to set to the GPIO pin as a parameter
         bl      writeClock                          // Calls the function to set the clock pin
-
-        // Calls the appropriate button's function depending on what was pressed
-        ldr     r1, =buttonsList                    // Loads the list containing locations for all the buttons
-        cmp     r5, #0                              // Checks to see if the current button was pressed
-        ldr     r0, [r1, r4, lsl #2]                // Shifts across the list to call the appropriate button's function (2 bytes shift since word aligned list)
-        bleq    printf                              // Calls the function to print to the console if the button was pressed
 
         // Increments the loop iteration counter
         add     r4, #1                              // Increments the loop iteration counter
@@ -237,9 +257,19 @@ readSNES:
         bllt    readSNESLoop                        // Loops back through the read loop to get the next button's status
 
     // Pops the stored existing variable registers from the stack to abide to the APCS
-    mov         r0, r5
+    mov         r0, r5                              // Returns a list containing the status of all the SNES controller buttons
     pop         {r4, r5, fp, lr}                    // Pops the specified registers from the stack to preserve them
     bx          lr                                  // Branches back to the code that initially called the function
+
+// Branch where the program goes to be terminated
+endProgram:
+    // Removes the local name for the register containing the base GPIO address
+    .unreq      gpioBase                            // Removes the alias from the base GPIO address register
+
+    // Pops the stored existing variable registers from the stack to abide to the APCS
+    pop         {r4, r9, r10, fp, lr}               // Pops the specified registers from the stack to preserve them
+    end:
+        b       end                                 // Keeps looping forever
 
 @ Data section
 .section .data
@@ -248,7 +278,7 @@ readSNES:
 gpioPointer:    .int        0
 
 // Functions to print out strings based on different scenarios to the console
-programCreator: .asciz      "Created by Sharjeel Junaid\n"
+programCreator: .asciz      "Created by Sharjeel Junaid, Keegan Barnett, Bader Abdulwaseem\n"
 requestButton:  .asciz      "Please press a button\n"
 pressedUp:      .asciz      "You have pressed UP\n"
 pressedDown:    .asciz      "You have pressed DOWN\n"
@@ -258,11 +288,10 @@ pressedA:       .asciz      "You have pressed A\n"
 pressedB:       .asciz      "You have pressed B\n"
 pressedX:       .asciz      "You have pressed X\n"
 pressedY:       .asciz      "You have pressed Y\n"
-pressedStart:   .asciz      "You have pressed START\n"
+pressedStart:   .asciz      "Program is terminating...\n"
 pressedSelect:  .asciz      "You have pressed SELECT\n"
 pressedL:       .asciz      "You have pressed L\n"
 pressedR:       .asciz      "You have pressed R\n"
-endProgram:     .asciz      "Program is terminating..."
 
 // Function that stores a list of all the function locations correlating to the SNES controller's buttons
 buttonsList:
