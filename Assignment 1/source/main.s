@@ -90,7 +90,7 @@ initGPIO:
         mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
         orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
         str     r5, [gpioBase]                      // Applies the changes to the specified GPIO pin by saving to memory
-        bl      endfunctionSelectTest               // Branches to the end of the function select register tests
+        b       endfunctionSelectTest               // Branches to the end of the function select register tests
     functionSelect2Test:
         cmp     r1, #20                             // Checks to see if the GPIO pin specified is on the second Function Select Register
         bge     functionSelect3Test                 // Branches to the next Function Select Register's test if it is outside the current's range
@@ -102,7 +102,7 @@ initGPIO:
         mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
         orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
         str     r5, [gpioBase, #0x4*1]              // Applies the changes to the specified GPIO pin by saving to memory
-        bl      endfunctionSelectTest               // Branches to the end of the function select register tests
+        b       endfunctionSelectTest               // Branches to the end of the function select register tests
     functionSelect3Test:
         cmp     r1, #30                             // Checks to see if the GPIO pin specified is on the third Function Select Register
         bge     functionSelect4Test                 // Branches to the next Function Select Register's test if it is outside the current's range
@@ -114,7 +114,7 @@ initGPIO:
         mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
         orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
         str     r5, [gpioBase, #0x4*2]              // Applies the changes to the specified GPIO pin by saving to memory
-        bl      endfunctionSelectTest               // Branches to the end of the function select register tests
+        b       endfunctionSelectTest               // Branches to the end of the function select register tests
     functionSelect4Test:
         cmp     r1, #40                             // Checks to see if the GPIO pin specified is on the fourth Function Select Register
         bge     functionSelect5Test                 // Branches to the next Function Select Register's test if it is outside the current's range
@@ -126,7 +126,7 @@ initGPIO:
         mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
         orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
         str     r5, [gpioBase, #0x4*3]              // Applies the changes to the specified GPIO pin by saving to memory
-        bl      endfunctionSelectTest               // Branches to the end of the function select register tests
+        b       endfunctionSelectTest               // Branches to the end of the function select register tests
     functionSelect5Test:
         cmp     r1, #50                             // Checks to see if the GPIO pin specified is on the fifth Function Select Register
         bge     functionSelect6Test                 // Branches to the next Function Select Register's test if it is outside the current's range
@@ -138,7 +138,7 @@ initGPIO:
         mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
         orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
         str     r5, [gpioBase, #0x4*4]              // Applies the changes to the specified GPIO pin by saving to memory
-        bl      endfunctionSelectTest               // Branches to the end of the function select register tests
+        b       endfunctionSelectTest               // Branches to the end of the function select register tests
     functionSelect6Test:
         cmp     r1, #54                             // Checks to see if the GPIO pin specified is on the sixth Function Select Register
         bge     endfunctionSelectTest               // Branches to the end of the tests if it is outside the current's range
@@ -150,7 +150,7 @@ initGPIO:
         mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
         orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
         str     r5, [gpioBase, #0x4*5]              // Applies the changes to the specified GPIO pin by saving to memory
-        bl      endfunctionSelectTest               // Branches to the end of the function select register tests
+        b       endfunctionSelectTest               // Branches to the end of the function select register tests
     endfunctionSelectTest:
         // Pops the stored existing variable registers from the stack to abide to the APCS
         pop     {r4, r5, r6, r7, fp, lr}            // Pops the specified registers from the stack to preserve them
