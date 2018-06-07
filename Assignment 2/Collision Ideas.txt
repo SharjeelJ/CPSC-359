@@ -3,3 +3,7 @@
 	- If you bounce from below, reverse the vertical direction so that the ball bounces back down to the floor
 		- Similarly use this same idea when you hit the ceiling
 	- If you bounce from above, reverse the vertical direction such that the ball bounces upwards
+	
+	
+- An easier solution might be that instead of relying on the individual pixels being hit, we can instead hold the ball within a bounded area. For example, the ball can't go past x width and must stay within x width. Same also applies for height where the ball must stay within y height
+	- However this can only work for the wall collisions
