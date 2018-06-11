@@ -1,10 +1,8 @@
-// Main function used to pass the background image
+// Main function used to pass the game's background image
 .global backgroundImage
 backgroundImage:
 
-// Stores the dimensions of the image and its location that will be used during printing
-    .int        400                                 // X pixel from where the image will start drawing on the display
-    .int        400                                 // Y pixel from where the image will start drawing on the display
+// Stores the dimensions of the image onto the stack
     .int        208                                 // Width of the image in pixels
     .int        232                                 // Height of the image in pixels
 
