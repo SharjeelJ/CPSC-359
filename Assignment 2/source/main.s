@@ -36,6 +36,7 @@ main:
 
     // Function that is run forever in a loop
     mov         r9, #12                             // Stores the previously pressed button
+    mov         r10, #800
     loopedProgram:
         bl      readSNES                            // Calls the function to read the SNES controller's input
 
@@ -43,8 +44,8 @@ main:
         eor     r0, #0x000F0000                     // Bit mask to ignore the 4 unused SNES controller button bits
         mvn     r0, r0                              // Takes the 1's complement to invert all the bits
         clz     r1, r0                              // Counts the number of leading zeroes in the button status list to determine the button that was pressed with the most significant bit
-//        cmp     r1, r9                              // Checks to see if the button currently being pressed was also being pressed before
-//        bleq    duplicateButton                     // Skips printing out if the button was previously pressed
+        cmp     r1, r9                              // Checks to see if the button currently being pressed was also being pressed before
+        bleq    duplicateButton                     // Skips printing out if the button was previously pressed
         mov     r9, r1                              // Stores which button is currently being pressed
         ldr     r0, =buttonsList                    // Loads the list containing locations for all the buttons
         ldr     r0, [r0, r9, lsl #2]                // Shifts across the list to call the appropriate button's function (2 bytes shift since word aligned list)
@@ -56,12 +57,22 @@ main:
         cmp     r9, #12                             // Checks to see if the previous button was just depressed to prevent a repeated print
         ldrne   r0, =requestButton                  // Passes in the request button string and makes sure it is null terminated
         blne    printf                              // Calls the function to print to the console
-//        duplicateButton:
+        duplicateButton:
 
         // Calls the function to print out the background image to the display
         ldr     r0, =backgroundImage                // Passes in the background image
-        mov     r1, #400                            // Passes in the X pixel from where the image will start drawing on the display
-        mov     r2, #400                            // Passes in the Y pixel from where the image will start drawing on the display
+        mov     r1, #0                              // Passes in the X pixel from where the image will start drawing on the display
+        mov     r2, #0                              // Passes in the Y pixel from where the image will start drawing on the display
+        bl      drawImage                           // Calls the function to print to the display
+
+        // Calls the function to print out the paddle image to the display while applying the appropriate movements
+        ldr     r0, =paddleImage                    // Passes in the paddle image
+        cmp     r9, #6                              // Checks to see if the Left button has been pressed
+        subeq   r10, #10                            // Moves the pixels of the paddle to the left
+        cmp     r9, #7                              // Checks to see if the Right button has been pressed
+        addeq   r10, #10                            // Moves the pixels of the paddle to the right
+        mov     r1, r10                             // Passes in the X pixel from where the image will start drawing on the display
+        mov     r2, #900                            // Passes in the Y pixel from where the image will start drawing on the display
         bl      drawImage                           // Calls the function to print to the display
 
         // Loops the program
@@ -69,6 +80,12 @@ main:
 
 // Branch where the program goes to be terminated
 endProgram:
+    // Calls the function to print out the black screen image to the display
+    ldr     r0, =clearImage                         // Passes in the black image
+    mov     r1, #0                                  // Passes in the X pixel from where the image will start drawing on the display
+    mov     r2, #0                                  // Passes in the Y pixel from where the image will start drawing on the display
+    bl      drawImage                               // Calls the function to print to the display
+
     // Pops the stored existing variable registers from the stack to abide to the APCS
     pop         {r9, fp, lr}                        // Pops the specified registers from the stack to preserve them
     end:
