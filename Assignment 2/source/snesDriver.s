@@ -1,14 +1,21 @@
 // Function to initialize the passed in GPIO pin in the passed in mode
 // PARAMS:
-// r1 = GPIO pin # (0-53 inclusive)
-// r2 = GPIO pin mode (input being 0xb000 and output being 0xb001)
+// r0 = GPIO pin # (0-53 inclusive)
+// r1 = GPIO pin mode (input being 0xb000 and output being 0xb001)
 .global initGPIO
 initGPIO:
     // Stores the existing variable registers to the stack to abide to the APCS
-    push        {r4, r5, r6, r7, r10, fp, lr}       // Pushes the specified registers to the stack to preserve them
+    push        {r8, r9, r10, fp, lr}               // Pushes the specified registers to the stack to preserve them
 
     // Sets a local name for the register containing the base GPIO address
+    // Sets local names for different registers that will be used
     gpioBase    .req        r10                     // Creates an alias for the base GPIO address register
+    passedPin   .req        r8                      // Creates an alias for the passed in pin # register
+    passedMode  .req        r9                      // Creates an alias for the passed in pin mode register
+
+    // Stores the passed in values to less volatile registers
+    mov         passedPin, r0                       // Stores the passed in pin # to a register
+    mov         passedMode, r1                      // Stores the passed in pin mode to a register
 
     // Initializes the GPIO base address pointer
     ldr         r0, =gpioPointer
@@ -19,93 +26,94 @@ initGPIO:
     ldr         gpioBase, [r0]                      // Updates the pointer address
 
     // Stores the number of bits each pin has
-    mov         r4, #3                              // Bits per pin
+    mov         r0, #3                              // Bits per pin
 
     // Determines which function select register needs to be used as well as the passed in GPIO pin's offset
     functionSelect1Test:
-        cmp     r1, #10                             // Checks to see if the GPIO pin specified is on the first Function Select Register
+        cmp     passedPin, #10                      // Checks to see if the GPIO pin specified is on the first Function Select Register
         bge     functionSelect2Test                 // Branches to the next Function Select Register's test if it is outside the current's range
-        ldr     r5, [gpioBase]                      // Stores the contents of the appropriate Function Select Register
-        mul     r6, r1, r4                          // Calculates the bits that correspond to the specified GPIO pin
-        mov     r7, #0b111                          // Readies up for a bit clear to take place
-        bic     r5, r7, lsl r6                      // Performs the bit clear operation on the appropriate bits corresponding to the specified GPIO pin
-        mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
-        orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
-        str     r5, [gpioBase]                      // Applies the changes to the specified GPIO pin by saving to memory
+        ldr     r1, [gpioBase]                      // Stores the contents of the appropriate Function Select Register
+        mul     r2, passedPin, r0                   // Calculates the bits that correspond to the specified GPIO pin
+        mov     r0, #0b111                          // Readies up for a bit clear to take place
+        bic     r1, r0, lsl r2                      // Performs the bit clear operation on the appropriate bits corresponding to the specified GPIO pin
+        mov     r0, passedMode                      // Readies up to set the GPIO pin's mode (input / output)
+        orr     r1, r0, lsl r2                      // Sets the GPIO pin's mode (input / output)
+        str     r1, [gpioBase]                      // Applies the changes to the specified GPIO pin by saving to memory
         b       endfunctionSelectTest               // Branches to the end of the function select register tests
     functionSelect2Test:
-        cmp     r1, #20                             // Checks to see if the GPIO pin specified is on the second Function Select Register
+        cmp     passedPin, #20                      // Checks to see if the GPIO pin specified is on the second Function Select Register
         bge     functionSelect3Test                 // Branches to the next Function Select Register's test if it is outside the current's range
-        ldr     r5, [gpioBase, #0x4*1]              // Stores the contents of the appropriate Function Select Register
-        sub     r6, r1, #10                         // Calculates the bits that correspond to the specified GPIO pin
-        mul     r6, r4                              // Calculates the bits that correspond to the specified GPIO pin
-        mov     r7, #0b111                          // Readies up for a bit clear to take place
-        bic     r5, r7, lsl r6                      // Performs the bit clear operation on the appropriate bits corresponding to the specified GPIO pin
-        mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
-        orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
-        str     r5, [gpioBase, #0x4*1]              // Applies the changes to the specified GPIO pin by saving to memory
+        ldr     r1, [gpioBase, #0x4*1]              // Stores the contents of the appropriate Function Select Register
+        sub     r2, passedPin, #10                  // Calculates the bits that correspond to the specified GPIO pin
+        mul     r2, r0                              // Calculates the bits that correspond to the specified GPIO pin
+        mov     r0, #0b111                          // Readies up for a bit clear to take place
+        bic     r1, r0, lsl r2                      // Performs the bit clear operation on the appropriate bits corresponding to the specified GPIO pin
+        mov     r0, passedMode                      // Readies up to set the GPIO pin's mode (input / output)
+        orr     r1, r0, lsl r2                      // Sets the GPIO pin's mode (input / output)
+        str     r1, [gpioBase, #0x4*1]              // Applies the changes to the specified GPIO pin by saving to memory
         b       endfunctionSelectTest               // Branches to the end of the function select register tests
     functionSelect3Test:
-        cmp     r1, #30                             // Checks to see if the GPIO pin specified is on the third Function Select Register
+        cmp     passedPin, #30                      // Checks to see if the GPIO pin specified is on the third Function Select Register
         bge     functionSelect4Test                 // Branches to the next Function Select Register's test if it is outside the current's range
-        ldr     r5, [gpioBase, #0x4*2]              // Stores the contents of the appropriate Function Select Register
-        sub     r6, r1, #20                         // Calculates the bits that correspond to the specified GPIO pin
-        mul     r6, r4                              // Calculates the bits that correspond to the specified GPIO pin
-        mov     r7, #0b111                          // Readies up for a bit clear to take place
-        bic     r5, r7, lsl r6                      // Performs the bit clear operation on the appropriate bits corresponding to the specified GPIO pin
-        mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
-        orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
-        str     r5, [gpioBase, #0x4*2]              // Applies the changes to the specified GPIO pin by saving to memory
+        ldr     r1, [gpioBase, #0x4*2]              // Stores the contents of the appropriate Function Select Register
+        sub     r2, passedPin, #20                  // Calculates the bits that correspond to the specified GPIO pin
+        mul     r2, r0                              // Calculates the bits that correspond to the specified GPIO pin
+        mov     r0, #0b111                          // Readies up for a bit clear to take place
+        bic     r1, r0, lsl r2                      // Performs the bit clear operation on the appropriate bits corresponding to the specified GPIO pin
+        mov     r0, passedMode                      // Readies up to set the GPIO pin's mode (input / output)
+        orr     r1, r0, lsl r2                      // Sets the GPIO pin's mode (input / output)
+        str     r1, [gpioBase, #0x4*2]              // Applies the changes to the specified GPIO pin by saving to memory
         b       endfunctionSelectTest               // Branches to the end of the function select register tests
     functionSelect4Test:
-        cmp     r1, #40                             // Checks to see if the GPIO pin specified is on the fourth Function Select Register
+        cmp     passedPin, #40                      // Checks to see if the GPIO pin specified is on the fourth Function Select Register
         bge     functionSelect5Test                 // Branches to the next Function Select Register's test if it is outside the current's range
-        ldr     r5, [gpioBase, #0x4*3]              // Stores the contents of the appropriate Function Select Register
-        sub     r6, r1, #30                         // Calculates the bits that correspond to the specified GPIO pin
-        mul     r6, r4                              // Calculates the bits that correspond to the specified GPIO pin
-        mov     r7, #0b111                          // Readies up for a bit clear to take place
-        bic     r5, r7, lsl r6                      // Performs the bit clear operation on the appropriate bits corresponding to the specified GPIO pin
-        mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
-        orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
-        str     r5, [gpioBase, #0x4*3]              // Applies the changes to the specified GPIO pin by saving to memory
+        ldr     r1, [gpioBase, #0x4*3]              // Stores the contents of the appropriate Function Select Register
+        sub     r2, passedPin, #30                  // Calculates the bits that correspond to the specified GPIO pin
+        mul     r2, r0                              // Calculates the bits that correspond to the specified GPIO pin
+        mov     r0, #0b111                          // Readies up for a bit clear to take place
+        bic     r1, r0, lsl r2                      // Performs the bit clear operation on the appropriate bits corresponding to the specified GPIO pin
+        mov     r0, passedMode                      // Readies up to set the GPIO pin's mode (input / output)
+        orr     r1, r0, lsl r2                      // Sets the GPIO pin's mode (input / output)
+        str     r1, [gpioBase, #0x4*3]              // Applies the changes to the specified GPIO pin by saving to memory
         b       endfunctionSelectTest               // Branches to the end of the function select register tests
     functionSelect5Test:
-        cmp     r1, #50                             // Checks to see if the GPIO pin specified is on the fifth Function Select Register
+        cmp     passedPin, #50                      // Checks to see if the GPIO pin specified is on the fifth Function Select Register
         bge     functionSelect6Test                 // Branches to the next Function Select Register's test if it is outside the current's range
-        ldr     r5, [gpioBase, #0x4*4]              // Stores the contents of the appropriate Function Select Register
-        sub     r6, r1, #40                         // Calculates the bits that correspond to the specified GPIO pin
-        mul     r6, r4                              // Calculates the bits that correspond to the specified GPIO pin
-        mov     r7, #0b111                          // Readies up for a bit clear to take place
-        bic     r5, r7, lsl r6                      // Performs the bit clear operation on the appropriate bits corresponding to the specified GPIO pin
-        mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
-        orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
-        str     r5, [gpioBase, #0x4*4]              // Applies the changes to the specified GPIO pin by saving to memory
+        ldr     r1, [gpioBase, #0x4*4]              // Stores the contents of the appropriate Function Select Register
+        sub     r2, passedPin, #40                  // Calculates the bits that correspond to the specified GPIO pin
+        mul     r2, r0                              // Calculates the bits that correspond to the specified GPIO pin
+        mov     r0, #0b111                          // Readies up for a bit clear to take place
+        bic     r1, r0, lsl r2                      // Performs the bit clear operation on the appropriate bits corresponding to the specified GPIO pin
+        mov     r0, passedMode                      // Readies up to set the GPIO pin's mode (input / output)
+        orr     r1, r0, lsl r2                      // Sets the GPIO pin's mode (input / output)
+        str     r1, [gpioBase, #0x4*4]              // Applies the changes to the specified GPIO pin by saving to memory
         b       endfunctionSelectTest               // Branches to the end of the function select register tests
     functionSelect6Test:
-        cmp     r1, #54                             // Checks to see if the GPIO pin specified is on the sixth Function Select Register
+        cmp     passedPin, #54                      // Checks to see if the GPIO pin specified is on the sixth Function Select Register
         bge     endfunctionSelectTest               // Branches to the end of the tests if it is outside the current's range
-        ldr     r5, [gpioBase, #0x4*5]              // Stores the contents of the appropriate Function Select Register
-        sub     r6, r1, #50                         // Calculates the bits that correspond to the specified GPIO pin
-        mul     r6, r4                              // Calculates the bits that correspond to the specified GPIO pin
-        mov     r7, #0b111                          // Readies up for a bit clear to take place
-        bic     r5, r7, lsl r6                      // Performs the bit clear operation on the appropriate bits corresponding to the specified GPIO pin
-        mov     r7, r2                              // Readies up to set the GPIO pin's mode (input / output)
-        orr     r5, r7, lsl r6                      // Sets the GPIO pin's mode (input / output)
-        str     r5, [gpioBase, #0x4*5]              // Applies the changes to the specified GPIO pin by saving to memory
+        ldr     r1, [gpioBase, #0x4*5]              // Stores the contents of the appropriate Function Select Register
+        sub     r2, passedPin, #50                  // Calculates the bits that correspond to the specified GPIO pin
+        mul     r2, r0                              // Calculates the bits that correspond to the specified GPIO pin
+        mov     r0, #0b111                          // Readies up for a bit clear to take place
+        bic     r1, r0, lsl r2                      // Performs the bit clear operation on the appropriate bits corresponding to the specified GPIO pin
+        mov     r0, passedMode                      // Readies up to set the GPIO pin's mode (input / output)
+        orr     r1, r0, lsl r2                      // Sets the GPIO pin's mode (input / output)
+        str     r1, [gpioBase, #0x4*5]              // Applies the changes to the specified GPIO pin by saving to memory
         b       endfunctionSelectTest               // Branches to the end of the function select register tests
     endfunctionSelectTest:
 
-    // Removes the local name for the register containing the base GPIO address
+    // Removes the local names set for the registers
     .unreq      gpioBase                            // Removes the alias from the base GPIO address register
+    .unreq      passedPin                           // Removes the alias from the passed in pin # register
+    .unreq      passedMode                          // Removes the alias from the passed in pin mode register
 
     // Pops the stored existing variable registers from the stack to abide to the APCS
-    pop         {r4, r5, r6, r7, r10, fp, lr}       // Pops the specified registers from the stack to preserve them
+    pop         {r8, r9, r10, fp, lr}               // Pops the specified registers from the stack to preserve them
     bx          lr                                  // Branches back to the code that initially called the function
 
 // Function to set the value of GPIO pin 9 (Latch)
 // PARAMS:
 // r0 = Value to set
-.global writeLatch
 writeLatch:
     ldr         r2, =gpioPointer                    // Stores the pointer to the base GPIO address
     ldr         r2, [r2]                            // Updates the pointer address
@@ -119,7 +127,6 @@ writeLatch:
 // Function to set the value of GPIO pin 11 (Clock)
 // PARAMS:
 // r0 = Value to set
-.global writeClock
 writeClock:
     ldr         r2, =gpioPointer                    // Stores the pointer to the base GPIO address
     ldr         r2, [r2]                            // Updates the pointer address
@@ -133,7 +140,6 @@ writeClock:
 // Function to read from the value of GPIO pin 10 (Data)
 // RETURNS:
 // r0 = Value of GPIO pin 10 (Data)
-.global readData
 readData:
     ldr         r2, =gpioPointer                    // Stores the pointer to the base GPIO address
     ldr         r2, [r2]                            // Updates the pointer address

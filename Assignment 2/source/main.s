@@ -5,7 +5,7 @@
 .global main
 main:
     // Stores the existing variable registers to the stack to abide to the APCS
-    push        {r4, r9, r10, fp, lr}               // Pushes the specified registers to the stack to preserve them
+    push        {r9, fp, lr}                        // Pushes the specified registers to the stack to preserve them
 
     // Initializes the frame buffer and stores the display's information
     ldr         r0, =frameBufferData                // Stores the frame buffer information in a temporary register
@@ -16,18 +16,18 @@ main:
     bl          printf                              // Calls the function to print to the console
 
     // Sets GPIO pin 9 (Latch) to output
-    mov         r1, #9                              // Passes in the GPIO pin number as a parameter
-    mov         r2, #0xb001                         // Passes in the pin mode as a parameter
+    mov         r0, #9                              // Passes in the GPIO pin number as a parameter
+    mov         r1, #0xb001                         // Passes in the pin mode as a parameter
     bl          initGPIO                            // Calls the function to set the GPIO pin's status
 
     // Sets GPIO pin 10 (Data) to input
-    mov         r1, #10                             // Passes in the GPIO pin number as a parameter
-    mov         r2, #0xb000                         // Passes in the pin mode as a parameter
+    mov         r0, #10                             // Passes in the GPIO pin number as a parameter
+    mov         r1, #0xb000                         // Passes in the pin mode as a parameter
     bl          initGPIO                            // Calls the function to set the GPIO pin's status
 
     // Sets GPIO pin 11 (Clock) to output
-    mov         r1, #11                             // Passes in the GPIO pin number as a parameter
-    mov         r2, #0xb001                         // Passes in the pin mode as a parameter
+    mov         r0, #11                             // Passes in the GPIO pin number as a parameter
+    mov         r1, #0xb001                         // Passes in the pin mode as a parameter
     bl          initGPIO                            // Calls the function to set the GPIO pin's status
 
     // Prints out requesting a button to be pressed
@@ -70,7 +70,7 @@ main:
 // Branch where the program goes to be terminated
 endProgram:
     // Pops the stored existing variable registers from the stack to abide to the APCS
-    pop         {r4, r9, r10, fp, lr}               // Pops the specified registers from the stack to preserve them
+    pop         {r9, fp, lr}                        // Pops the specified registers from the stack to preserve them
     end:
         b       end                                 // Keeps looping forever
 
