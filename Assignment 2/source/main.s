@@ -75,6 +75,7 @@ main:
         mov     r1, #0                              // Passes in the X pixel from where the image will start drawing on the display
         mov     r2, #0                              // Passes in the Y pixel from where the image will start drawing on the display
         bl      drawImage                           // Calls the function to print to the display
+        
         notMenu:
 
         // Active game code
@@ -105,8 +106,17 @@ main:
         // Calls the function to print out the paddle image to the display
         ldr     r0, =paddleImage                    // Passes in the paddle image
         mov     r1, paddlePosition                  // Passes in the X pixel from where the image will start drawing on the display
-        mov     r2, #900                            // Passes in the Y pixel from where the image will start drawing on the display
+        mov     r2, #800                            // Passes in the Y pixel from where the image will start drawing on the display
         bl      drawImage                           // Calls the function to print to the display
+        // Calls the function to print out the paddle image to the display
+        ldr     r0, =background                    // Passes in the paddle image
+        mov     r1, #600                  			// Passes in the X pixel from where the image will start drawing on the display
+        mov     r2, #50                            // Passes in the Y pixel from where the image will start drawing on the display
+        //bl      drawImage                           // Calls the function to print to the display
+        //	Calls the function to print the bricks to the display
+        //mov     r0, #600                  			// Passes in the X pixel from where the image will start drawing on the display
+        //mov     r1, #205                            // Passes in the Y pixel from where the image will start drawing on the display
+        //bl		drawBrick
         notActiveGame:
 
         // Done playing code (end game screen)
