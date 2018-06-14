@@ -70,7 +70,7 @@ drawImage:
 @ Data section
 .section .data
 
-// Functions that will store the frame buffer's informations
+// Function that will store the frame buffer's information
 .globl frameBufferData
 frameBufferData:
 	.int        0		                            // Frame buffer pointer
