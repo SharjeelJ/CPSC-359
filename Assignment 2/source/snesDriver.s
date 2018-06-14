@@ -7,7 +7,6 @@ initGPIO:
     // Stores the existing variable registers to the stack to abide to the APCS
     push        {r8, r9, r10, fp, lr}               // Pushes the specified registers to the stack to preserve them
 
-    // Sets a local name for the register containing the base GPIO address
     // Sets local names for different registers that will be used
     gpioBase    .req        r10                     // Creates an alias for the base GPIO address register
     passedPin   .req        r8                      // Creates an alias for the passed in pin # register
