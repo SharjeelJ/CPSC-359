@@ -17,10 +17,10 @@ drawBrick:
 	brickNum	.req	r6
 	
 // Calls the function to print out the background image to the display
-       // ldr     r0, =backgroundImage               // Passes in the background image
-        //mov     pixelX, #600                            // Passes in the X pixel from where the image will start drawing on the display
-        //mov     pixelY, #100                            // Passes in the Y pixel from where the image will start drawing on the display
-        //bl      drawImage                           // Calls the function to print to the display
+		ldr     r0, =background               // Passes in the background image
+        mov     pixelX, #600                            // Passes in the X pixel from where the image will start drawing on the display
+        mov     pixelY, #100                            // Passes in the Y pixel from where the image will start drawing on the display
+        bl      drawImage                           // Calls the function to print to the display
 	
 	mov	offset, #0
 	mov	pixelX,	#600								//Starting X position for brick
