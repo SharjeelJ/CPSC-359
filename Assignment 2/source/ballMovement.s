@@ -1,13 +1,7 @@
 // PARAMS:
 // r0 = Image address of background
-// r1 = current X coordinate of ball
-// r2 = current Y coordinate of ball
-// We also need to pass in the direction, possibly through the stack
+// r1 = address of the status of the ball
 
-// RETURNS:
-//  r0 = new X coordinate of ball
-//  r1 = new Y coordinate of ball
-//  We also need to return the direction, possible through the stack
 
 .global	ballMovement
 ballMovement:
@@ -15,24 +9,25 @@ ballMovement:
     push    {r4 - r10, fp, lr}
     
     // Creating aliases for registers
-    xCoord              .req    r4
-    yCoord              .req    r5
+    xCoord              .req    r4  // X coordinate of ball
+    yCoord              .req    r5  // Y coordinate of ball
     backgroundWidth     .req    r6
     backgroundHeight    .req    r7
-    directionX          .req    r8
-    directionY          .req    r9
-    move                .req    r10
+    directionX          .req    r8  // Whether or not X is in the positive or negative direction
+    directionY          .req    r9  // Whether or not Y is in the positive or negative direction
+    shift               .req    r10 // to be multiplied with directionX or directionY
+        
+    // Copying the status of the ball into registers
+    ldr xCoord,     [r1]
+    ldr yCoord,     [r1, #4]
+    ldr directionX, [r1, #8]
+    ldr directionY, [r1, #12]
     
-    mov move, #1
+    // Copying dimensions of the background to registers
+    ldr backgroundWidth,    [r0]
+    ldr backgroundHeight,   [r0, #4]
     
-    ldr backgroundWidth, [r0]
-    sub backgroundWidth, backgroundWidth, #1
-    ldr backgroundHeight, [r0, #4]
-    sub backgroundHeight, backgroundHeight, #1
-    
-    // Determining the direction of the ball
-    mov     directionX, #1      // Will get rid of this after we pass it in as arguments, just a quick hack for now
-    mov     directionY, #1      // Will get rid of this after we pass it in as arguments, just a quick hack for now
+    // Determining whether the ball will go in either a positive or negative x and y direction
     cmp     xCoord, #0
     moveq   directionX, #1
     cmp     xCoord, backgroundWidth
@@ -42,18 +37,22 @@ ballMovement:
     cmp     yCoord, backgroundHeight
     moveq   directionY, #-1
     
-    // Drawing the ball everyone 1000 microseconds
+    // Drawing the ball
+    ldr r0, =ballImage
+    mla r1, directionX, shift, xCoord
+    mla r2, directionY, shift, yCoord
+    bl  drawImage
     
+    // Setting to update the ball every 1000 microseconds
     mov r0, #1000
     bl  delayMicroseconds
     
-    ldr r0, =ballImage
-    mla r1, directionX, move, xCoord
-    mla r2, directionY, move, yCoord
-    bl  drawImage
-    
-    mov r0, xCoord      // Returning X and Y coordinates
-    mov r1, yCoord
+    // Updating the status of the ball
+    ldr r1, =ballStatus
+    str xCoord,     [r1]
+    str yCoord,     [r1, #4]
+    str directionX, [r1, #8]
+    str directionY, [r1, #12]
     
     // Clearing aliases
     .unreq  xCoord
@@ -62,7 +61,7 @@ ballMovement:
     .unreq  backgroundHeight
     .unreq  directionX
     .unreq  directionY
-    .unreq  move
+    .unreq  shift
     
     // Initializing downward movement
     pop     {r4 - r10, fp, lr}

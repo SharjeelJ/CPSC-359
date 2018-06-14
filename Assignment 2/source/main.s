@@ -118,10 +118,9 @@ main:
         notDoneGame:
 
 		// Initializing ball to start a 0,0, going bottom right
-		ldr		r0, =ballImage
-		mov		r1, #0
-		mov		r2, #0
-//        bl        ballMovement
+		ldr		r0, =backgroundImage
+		ldr		r1, =ballStatus
+      //  bl        ballMovement
 
         // Loops the program
         bl      loopedProgram                       // Calls itself to keep looping
@@ -157,3 +156,13 @@ programCreator: .asciz      "Created by Sharjeel Junaid, Keegan Barnett, Bader A
 // Function that stores a list of all the function locations correlating to the SNES controller's buttons
 //buttonsList:
 //    .word pressedB, pressedY, pressedSelect, pressedStart, pressedUp, pressedDown, pressedLeft, pressedRight, pressedA, pressedX, pressedL, pressedR
+
+// Attributes of the ball
+.global	ballStatus
+ballStatus:
+	.int	0		// X coordinate
+	.int	0		// Y coordinate
+	.int	1		// X direction
+	.int	1		// Y direction
+
+
