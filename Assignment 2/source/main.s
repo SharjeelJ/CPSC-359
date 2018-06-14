@@ -5,7 +5,16 @@
 .global main
 main:
     // Stores the existing variable registers to the stack to abide to the APCS
-    push        {r9, fp, lr}                        // Pushes the specified registers to the stack to preserve them
+    push        {r4 - r10, fp, lr}                  // Pushes the specified registers to the stack to preserve them
+
+    // Sets local names for different registers that will be used
+    pressedButton   .req    r4                      // Creates an alias for the presed button register
+    gameState   .req        r5                      // Creates an alias for the game state register
+    gameScore   .req        r6                      // Creates an alias for the game score register
+    gameLives   .req        r7                      // Creates an alias for the game lives register
+    ballPosition    .req    r8                      // Creates an alias for the ball position register
+    ballDirection   .req    r9                      // Creates an alias for the ball direction register
+    paddlePosition  .req    r10                     // Creates an alias for the paddle position register
 
     // Initializes the frame buffer and stores the display's information
     ldr         r0, =frameBufferData                // Stores the frame buffer information in a temporary register
@@ -30,69 +39,131 @@ main:
     mov         r1, #0xb001                         // Passes in the pin mode as a parameter
     bl          initGPIO                            // Calls the function to set the GPIO pin's status
 
-    // Prints out requesting a button to be pressed
-    ldr         r0, =requestButton                  // Passes in the request button string and makes sure it is null terminated
-    bl          printf                              // Calls the function to print to the console
+    // Sets the defaults values for the game
+    mov         pressedButton, #12                  // Stores the default value for the previously pressed button
+    mov         gameState, #0                       // Stores the default value for the game state (0 = main menu, 1 = currently playing, 2 = done playing)
+    freshRun:
+    mov         gameScore, #0                       // Stores the default value for the game score
+    mov         gameLives, #3                       // Stores the default value for the game lives
+    mov         ballPosition, #800                  // Stores the default value for the ball position
+    mov         ballDirection, #0                   // Stores the default value for the ball direction (0 = not moving, 1 = up, 2 = down)
+    mov         paddlePosition, #800                // Stores the default value for the paddle position
 
     // Function that is run forever in a loop
-    mov         r9, #12                             // Stores the previously pressed button
     loopedProgram:
         bl      readSNES                            // Calls the function to read the SNES controller's input
 
-        // Calls the appropriate button's function depending on what was pressed
+        // Calls the appropriate button's function depending on what was pressed and what state the program is currently in
         eor     r0, #0x000F0000                     // Bit mask to ignore the 4 unused SNES controller button bits
         mvn     r0, r0                              // Takes the 1's complement to invert all the bits
         clz     r1, r0                              // Counts the number of leading zeroes in the button status list to determine the button that was pressed with the most significant bit
-//        cmp     r1, r9                              // Checks to see if the button currently being pressed was also being pressed before
-//        bleq    duplicateButton                     // Skips printing out if the button was previously pressed
-        mov     r9, r1                              // Stores which button is currently being pressed
-        ldr     r0, =buttonsList                    // Loads the list containing locations for all the buttons
-        ldr     r0, [r0, r9, lsl #2]                // Shifts across the list to call the appropriate button's function (2 bytes shift since word aligned list)
-        bl      printf                              // Calls the function to print to the console
+        mov     pressedButton, r1                   // Stores which button is currently being pressed
 
-        // Calls the end of the program function or requests for another button depending on what was pressed
-        cmp     r9, #3                              // Checks to see if the Start button has been pressed
+        // Main menu code
+        cmp     gameState, #0                       // Checks to see if the game is currently at the main menu
+        bne     notMenu                             // Skips the code if the game is not at the main menu
+        // Select button code
+        cmp     pressedButton, #2                   // Checks to see if the Select button has been pressed
         beq     endProgram                          // Calls the function to end the program
-        cmp     r9, #12                             // Checks to see if the previous button was just depressed to prevent a repeated print
-        ldrne   r0, =requestButton                  // Passes in the request button string and makes sure it is null terminated
-        blne    printf                              // Calls the function to print to the console
-//        duplicateButton:
-
+        // Start button code
+        cmp     pressedButton, #3                   // Checks to see if the Start button has been pressed
+        moveq   gameState, #1                       // Sets the game state value to make the game active
+        beq     freshRun                            // Calls the function to run a clean instance of the game
+        // General code
         // Calls the function to print out the background image to the display
-        //ldr     r0, =backgroundImage               // Passes in the background image
-        //mov     r1, #600                            // Passes in the X pixel from where the image will start drawing on the display
-        //mov     r2, #100                            // Passes in the Y pixel from where the image will start drawing on the display
-        bl      drawBrick                           // Calls the function to print to the display
+        ldr     r0, =backgroundImage                // Passes in the background image
+        mov     r1, #0                              // Passes in the X pixel from where the image will start drawing on the display
+        mov     r2, #0                              // Passes in the Y pixel from where the image will start drawing on the display
+        bl      drawImage                           // Calls the function to print to the display
+        
+        notMenu:
+
+        // Active game code
+        cmp     gameState, #1                       // Checks to see if the game is currently active
+        bne     notActiveGame                       // Skips the code if the game is not currently active
+        // B button code
+        cmp     pressedButton, #0                   // Checks to see if the B button has been pressed
+        cmpeq   ballDirection, #0                   // Checks to see if the ball is currently not moving
+        moveq   ballDirection, #1                   // Sets the ball direction to go up
+        // Select button code
+        cmp     pressedButton, #2                   // Checks to see if the Select button has been pressed
+        beq     endProgram                          // Calls the function to end the program
+        // Start button code
+        cmp     pressedButton, #3                   // Checks to see if the Start button has been pressed
+        beq     freshRun                            // Calls the function to run a clean instance of the game
+        // Left button code
+        cmp     pressedButton, #6                   // Checks to see if the Left button has been pressed
+        subeq   paddlePosition, #10                 // Moves the pixels of the paddle to the left
+        // Right button code
+        cmp     pressedButton, #7                   // Checks to see if the Right button has been pressed
+        addeq   paddlePosition, #10                 // Moves the pixels of the paddle to the right
+        // General code
+        // Calls the function to print out the background image to the display
+        ldr     r0, =backgroundImage                // Passes in the background image
+        mov     r1, #0                              // Passes in the X pixel from where the image will start drawing on the display
+        mov     r2, #0                              // Passes in the Y pixel from where the image will start drawing on the display
+        bl      drawImage                           // Calls the function to print to the display
+        // Calls the function to print out the paddle image to the display
+        ldr     r0, =paddleImage                    // Passes in the paddle image
+        mov     r1, paddlePosition                  // Passes in the X pixel from where the image will start drawing on the display
+        mov     r2, #800                            // Passes in the Y pixel from where the image will start drawing on the display
+        bl      drawImage                           // Calls the function to print to the display
+        // Calls the function to print out the paddle image to the display
+        ldr     r0, =background                    // Passes in the paddle image
+        mov     r1, #600                  			// Passes in the X pixel from where the image will start drawing on the display
+        mov     r2, #50                            // Passes in the Y pixel from where the image will start drawing on the display
+        //bl      drawImage                           // Calls the function to print to the display
+        //	Calls the function to print the bricks to the display
+        //mov     r0, #600                  			// Passes in the X pixel from where the image will start drawing on the display
+        //mov     r1, #205                            // Passes in the Y pixel from where the image will start drawing on the display
+        //bl		drawBrick
+        notActiveGame:
+
+        // Done playing code (end game screen)
+        cmp     gameState, #2                       // Checks to see if the game is done playing
+        bne     notDoneGame                         // Skips the code if the game is not currently done playing
+        // Any button code
+        cmp     pressedButton, #11                  // Checks to see if any button has been pressed
+        moveq   gameState, #0                       // Sets the game state value to the main menu
+        notDoneGame:
+
+		// Initializing ball to start a 0,0, going bottom right
+		ldr		r0, =ballImage
+		mov		r1, #0
+		mov		r2, #0
+//        bl        ballMovement
 
         // Loops the program
         bl      loopedProgram                       // Calls itself to keep looping
 
 // Branch where the program goes to be terminated
 endProgram:
+    // Removes the local names set for the registers
+    .unreq      pressedButton                       // Removes the alias from the pressed button register
+    .unreq      gameState                           // Removes the alias from the game state register
+    .unreq      gameScore                           // Removes the alias from the game score register
+    .unreq      gameLives                           // Removes the alias from the game lives register
+    .unreq      ballPosition                        // Removes the alias from the game lives register
+    .unreq      ballDirection                       // Removes the alias from the game lives register
+    .unreq      paddlePosition                      // Removes the alias from the game lives register
+
+    // Calls the function to print out the black screen image to the display
+    ldr         r0, =clearImage                     // Passes in the black image
+    mov         r1, #0                              // Passes in the X pixel from where the image will start drawing on the display
+    mov         r2, #0                              // Passes in the Y pixel from where the image will start drawing on the display
+    bl          drawImage                           // Calls the function to print to the display
+
     // Pops the stored existing variable registers from the stack to abide to the APCS
-    pop         {r9, fp, lr}                        // Pops the specified registers from the stack to preserve them
+    pop         {r4 - r10, fp, lr}                  // Pops the specified registers from the stack to preserve them
     end:
         b       end                                 // Keeps looping forever
 
 @ Data section
 .section .data
 
-// Functions to print out strings based on different scenarios to the console
+// Function to print out the program creator string to the console
 programCreator: .asciz      "Created by Sharjeel Junaid, Keegan Barnett, Bader Abdulwaseem\n"
-requestButton:  .asciz      "Please press a button\n"
-pressedUp:      .asciz      "You have pressed UP\n"
-pressedDown:    .asciz      "You have pressed DOWN\n"
-pressedLeft:    .asciz      "You have pressed LEFT\n"
-pressedRight:   .asciz      "You have pressed RIGHT\n"
-pressedA:       .asciz      "You have pressed A\n"
-pressedB:       .asciz      "You have pressed B\n"
-pressedX:       .asciz      "You have pressed X\n"
-pressedY:       .asciz      "You have pressed Y\n"
-pressedStart:   .asciz      "Program is terminating...\n"
-pressedSelect:  .asciz      "You have pressed SELECT\n"
-pressedL:       .asciz      "You have pressed L\n"
-pressedR:       .asciz      "You have pressed R\n"
 
 // Function that stores a list of all the function locations correlating to the SNES controller's buttons
-buttonsList:
-    .word pressedB, pressedY, pressedSelect, pressedStart, pressedUp, pressedDown, pressedLeft, pressedRight, pressedA, pressedX, pressedL, pressedR
+//buttonsList:
+//    .word pressedB, pressedY, pressedSelect, pressedStart, pressedUp, pressedDown, pressedLeft, pressedRight, pressedA, pressedX, pressedL, pressedR
