@@ -5,7 +5,7 @@
 .global main
 main:
     // Stores the existing variable registers to the stack to abide to the APCS
-    push        {r9, fp, lr}                        // Pushes the specified registers to the stack to preserve them
+    push        {r4, r5, r9, fp, lr}                        // Pushes the specified registers to the stack to preserve them
 
     // Initializes the frame buffer and stores the display's information
     ldr         r0, =frameBufferData                // Stores the frame buffer information in a temporary register
@@ -74,7 +74,13 @@ main:
         mov     r1, r10                             // Passes in the X pixel from where the image will start drawing on the display
         mov     r2, #900                            // Passes in the Y pixel from where the image will start drawing on the display
         bl      drawImage                           // Calls the function to print to the display
-
+		
+		// Initializing ball to start a 0,0, going bottom right
+		ldr		r0, =backgroundImage
+		mov		r1, #0
+		mov		r2, #0
+		bl		ballMovement
+		
         // Loops the program
         bl      loopedProgram                       // Calls itself to keep looping
 
@@ -87,7 +93,7 @@ endProgram:
     bl      drawImage                               // Calls the function to print to the display
 
     // Pops the stored existing variable registers from the stack to abide to the APCS
-    pop         {r9, fp, lr}                        // Pops the specified registers from the stack to preserve them
+    pop         {r4, r5, r9, fp, lr}                // Pops the specified registers from the stack to preserve them
     end:
         b       end                                 // Keeps looping forever
 
