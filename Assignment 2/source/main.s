@@ -40,6 +40,16 @@ main:
     mov         gameState, #0                       // Stores the default value for the game state (0 = main menu, 1 = currently playing, 2 = done playing)
     ldr         gameData, =gameData                 // Loads the address for the game data structure into a register
     freshRun:
+    mov         r0, #0                              // Stores the default value for the game score, ball X and Y position and ball X and Y direction
+    str         r0, [gameData, #0]                  // Stores the default game score
+    str         r0, [gameData, #8]                  // Stores the default X position of the ball
+    str         r0, [gameData, #12]                 // Stores the default Y position of the ball
+    str         r0, [gameData, #16]                 // Stores the default X direction of the ball
+    str         r0, [gameData, #20]                 // Stores the default Y direction of the ball
+    mov         r0, #3                              // Stores the default value for the game lives
+    str         r0, [gameData, #4]                  // Stores the default value for the game lives
+    mov         r0, #850                            // Stores the default position for the paddle
+    str         r0, [gameData, #24]                 // Stores the default position for the paddle
 
     // Function that is run forever in a loop
     loopedProgram:
@@ -74,8 +84,13 @@ main:
         bne     notActiveGame                       // Skips the code if the game is not currently active
         // B button code
         cmp     pressedButton, #0                   // Checks to see if the B button has been pressed
-//        cmpeq   ballDirection, #0                   // Checks to see if the ball is currently not moving
-//        moveq   ballDirection, #1                   // Sets the ball direction to go up
+        ldreq   r0, [gameData, #16]                 // Gets the current X direction of the ball
+        ldreq   r1, [gameData, #20]                 // Gets the current Y direction of the ball
+        cmpeq   r0, #0                              // Checks to see if the current X direction of the ball is default
+        cmpeq   r0, r1                              // Checks to see if the current Y direction of the ball is default
+        moveq   r0, #1                              // Stores the updated X and Y direction of the ball
+        streq   r0, [gameData, #16]                 // Stores the new X direction of the ball to let the game start
+        streq   r0, [gameData, #20]                 // Stores the new Y direction of the ball to let the game start
         // Select button code
         cmp     pressedButton, #2                   // Checks to see if the Select button has been pressed
         beq     endProgram                          // Calls the function to end the program
@@ -130,7 +145,7 @@ endProgram:
     .unreq      gameState                           // Removes the alias from the game state register
     .unreq      gameData                            // Removes the alias from the game data register
 
-// Calls the function to print out the black screen image to the display
+    // Calls the function to print out the black screen image to the display
     ldr         r0, =clearImage                     // Passes in the black image
     mov         r1, #0                              // Passes in the X pixel from where the image will start drawing on the display
     mov         r2, #0                              // Passes in the Y pixel from where the image will start drawing on the display
@@ -138,6 +153,7 @@ endProgram:
 
     // Pops the stored existing variable registers from the stack to abide to the APCS
     pop         {r4 - r6, fp, lr}                   // Pops the specified registers from the stack to preserve them
+
     end:
         b       end                                 // Keeps looping forever
 
@@ -158,6 +174,9 @@ gameData:
     .int        3                                   // Game lives
     .int        0                                   // Ball X position
     .int        0                                   // Ball Y position
-    .int        1                                   // Ball X direction (either 1 or -1)
-    .int        1                                   // Ball Y direction (either 1 or -1)
+    .int        0                                   // Ball X direction (either 1 or -1)
+    .int        0                                   // Ball Y direction (either 1 or -1)
     .int        850                                 // Paddle position
+    .int        3, 3, 3, 3, 3, 3, 3, 3, 3, 3        // First brick row states
+    .int        2, 2, 2, 2, 2, 2, 2, 2, 2, 2        // Second brick row states
+    .int        1, 1, 1, 1, 1, 1, 1, 1, 1, 1        // Third brick row states
