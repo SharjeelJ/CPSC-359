@@ -5,16 +5,12 @@
 .global main
 main:
     // Stores the existing variable registers to the stack to abide to the APCS
-    push        {r4 - r10, fp, lr}                  // Pushes the specified registers to the stack to preserve them
+    push        {r4 - r6, fp, lr}                   // Pushes the specified registers to the stack to preserve them
 
     // Sets local names for different registers that will be used
     pressedButton   .req    r4                      // Creates an alias for the presed button register
     gameState   .req        r5                      // Creates an alias for the game state register
-    gameScore   .req        r6                      // Creates an alias for the game score register
-    gameLives   .req        r7                      // Creates an alias for the game lives register
-    ballPosition    .req    r8                      // Creates an alias for the ball position register
-    ballDirection   .req    r9                      // Creates an alias for the ball direction register
-    paddlePosition  .req    r10                     // Creates an alias for the paddle position register
+    gameData    .req        r6                      // Creates an alias for the game data register
 
     // Initializes the frame buffer and stores the display's information
     ldr         r0, =frameBufferData                // Stores the frame buffer information in a temporary register
@@ -42,12 +38,8 @@ main:
     // Sets the defaults values for the game
     mov         pressedButton, #12                  // Stores the default value for the previously pressed button
     mov         gameState, #0                       // Stores the default value for the game state (0 = main menu, 1 = currently playing, 2 = done playing)
+    ldr         gameData, =gameData                 // Loads the address for the game data structure into a register
     freshRun:
-    mov         gameScore, #0                       // Stores the default value for the game score
-    mov         gameLives, #3                       // Stores the default value for the game lives
-    mov         ballPosition, #800                  // Stores the default value for the ball position
-    mov         ballDirection, #0                   // Stores the default value for the ball direction (0 = not moving, 1 = up, 2 = down)
-    mov         paddlePosition, #850                // Stores the default value for the paddle position
 
     // Function that is run forever in a loop
     loopedProgram:
@@ -75,7 +67,6 @@ main:
         mov     r1, #0                              // Passes in the X pixel from where the image will start drawing on the display
         mov     r2, #0                              // Passes in the Y pixel from where the image will start drawing on the display
         bl      drawImage                           // Calls the function to print to the display
-        
         notMenu:
 
         // Active game code
@@ -83,8 +74,8 @@ main:
         bne     notActiveGame                       // Skips the code if the game is not currently active
         // B button code
         cmp     pressedButton, #0                   // Checks to see if the B button has been pressed
-        cmpeq   ballDirection, #0                   // Checks to see if the ball is currently not moving
-        moveq   ballDirection, #1                   // Sets the ball direction to go up
+//        cmpeq   ballDirection, #0                   // Checks to see if the ball is currently not moving
+//        moveq   ballDirection, #1                   // Sets the ball direction to go up
         // Select button code
         cmp     pressedButton, #2                   // Checks to see if the Select button has been pressed
         beq     endProgram                          // Calls the function to end the program
@@ -93,10 +84,14 @@ main:
         beq     freshRun                            // Calls the function to run a clean instance of the game
         // Left button code
         cmp     pressedButton, #6                   // Checks to see if the Left button has been pressed
-        subeq   paddlePosition, #10                 // Moves the pixels of the paddle to the left
+        ldreq   r0, [gameData, #24]                 // Gets the current position of the paddle
+        subeq   r0, #10                             // Moves the pixels of the paddle to the left
+        streq   r0, [gameData, #24]                 // Stores the updated paddle position
         // Right button code
         cmp     pressedButton, #7                   // Checks to see if the Right button has been pressed
-        addeq   paddlePosition, #10                 // Moves the pixels of the paddle to the right
+        ldreq   r0, [gameData, #24]                 // Gets the current position of the paddle
+        addeq   r0, #10                             // Moves the pixels of the paddle to the right
+        streq   r0, [gameData, #24]                 // Stores the updated paddle position
         // General code
         // Calls the function to print out the background image to the display
         ldr     r0, =backgroundImage                // Passes in the background image
@@ -104,14 +99,14 @@ main:
         mov     r2, #0                              // Passes in the Y pixel from where the image will start drawing on the display
         bl      drawImage                           // Calls the function to print to the display
         // Calls the function to print out the paddle image to the display
-        ldr     r0, =paddle                    // Passes in the paddle image
-        mov     r1, paddlePosition                  // Passes in the X pixel from where the image will start drawing on the display
+        ldr     r0, =paddle                         // Passes in the paddle image
+        ldreq   r1, [gameData, #24]                 // Passes in the X pixel from where the image will start drawing on the display
         mov     r2, #800                            // Passes in the Y pixel from where the image will start drawing on the display
         bl      drawImage                           // Calls the function to print to the display
-        // Calls the function to print out the paddle image to the display
-        ldr     r0, =background                    // Passes in the paddle image
-        mov     r1, #500                  			// Passes in the X pixel from where the image will start drawing on the display
-        mov     r2, #50                            // Passes in the Y pixel from where the image will start drawing on the display
+        // Calls the function to print out the background image to the display
+        ldr     r0, =background                     // Passes in the background image
+        mov     r1, #500                  	        // Passes in the X pixel from where the image will start drawing on the display
+        mov     r2, #50                             // Passes in the Y pixel from where the image will start drawing on the display
         bl      drawImage                           // Calls the function to print to the display
         //	Calls the function to print the bricks to the display
         bl		drawBrick
@@ -125,11 +120,10 @@ main:
         moveq   gameState, #0                       // Sets the game state value to the main menu
         notDoneGame:
 
-	// Initializing ball to start a 0,0, going bottom right
-	ldr		r0, =ballImage
-	ldr		r1, =ballStatus
-        bl      ballMovement
-
+	    // Initializing ball to start a 0,0, going bottom right
+	    ldr		r0, =ballImage
+        mov     r1, gameData
+//        bl      ballMovement
 
         // Loops the program
         bl      loopedProgram                       // Calls itself to keep looping
@@ -139,20 +133,16 @@ endProgram:
     // Removes the local names set for the registers
     .unreq      pressedButton                       // Removes the alias from the pressed button register
     .unreq      gameState                           // Removes the alias from the game state register
-    .unreq      gameScore                           // Removes the alias from the game score register
-    .unreq      gameLives                           // Removes the alias from the game lives register
-    .unreq      ballPosition                        // Removes the alias from the game lives register
-    .unreq      ballDirection                       // Removes the alias from the game lives register
-    .unreq      paddlePosition                      // Removes the alias from the game lives register
+    .unreq      gameData                            // Removes the alias from the game data register
 
-    // Calls the function to print out the black screen image to the display
+// Calls the function to print out the black screen image to the display
     ldr         r0, =clearImage                     // Passes in the black image
     mov         r1, #0                              // Passes in the X pixel from where the image will start drawing on the display
     mov         r2, #0                              // Passes in the Y pixel from where the image will start drawing on the display
     bl          drawImage                           // Calls the function to print to the display
 
     // Pops the stored existing variable registers from the stack to abide to the APCS
-    pop         {r4 - r10, fp, lr}                  // Pops the specified registers from the stack to preserve them
+    pop         {r4 - r6, fp, lr}                   // Pops the specified registers from the stack to preserve them
     end:
         b       end                                 // Keeps looping forever
 
@@ -166,10 +156,13 @@ programCreator: .asciz      "Created by Sharjeel Junaid, Keegan Barnett, Bader A
 //buttonsList:
 //    .word pressedB, pressedY, pressedSelect, pressedStart, pressedUp, pressedDown, pressedLeft, pressedRight, pressedA, pressedX, pressedL, pressedR
 
-// Position and direction of the ball are defined in this structure
-.global ballStatus
-ballStatus:
-	.int	0	// X coordinate of ball
-	.int	0	// Y coordinate of ball
-	.int	1	// X direction (either 1 or -1)
-	.int	1	// Y direction (either 1 or -1)
+// Data structure containing all the game data
+.global gameData
+gameData:
+    .int    0    // Game score
+    .int    3    // Game lives
+    .int    0    // Ball X position
+    .int    0    // Ball Y position
+    .int    1    // Ball X direction (either 1 or -1)
+    .int    1    // Ball Y direction (either 1 or -1)
+    .int    850  // Paddle position

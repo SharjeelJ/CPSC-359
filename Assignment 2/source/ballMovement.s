@@ -1,7 +1,6 @@
 // PARAMS:
-// r0 = Image address of background
-// r1 = address of the status of the ball
-
+// r0 = Image address of the background
+// r1 = Game data address
 
 .global	ballMovement
 ballMovement:
@@ -27,10 +26,10 @@ ballMovement:
     sub backgroundHeight, ballSize  // Subtracting the height with the ball size
      
     // Copying the status of the ball into registers
-    ldr xCoord,     [r1]
-    ldr yCoord,     [r1, #4]
-    ldr directionX, [r1, #8]
-    ldr directionY, [r1, #12]
+    ldr xCoord,     [r1, #8]
+    ldr yCoord,     [r1, #12]
+    ldr directionX, [r1, #16]
+    ldr directionY, [r1, #20]
     
     // Determining whether the ball will go in either a positive or negative x and y direction
     cmp     xCoord, #0
@@ -49,11 +48,11 @@ ballMovement:
     bl  drawImage
     
     // Updating the status of the ball
-    ldr r1, =ballStatus
-    str xCoord,     [r1]
-    str yCoord,     [r1, #4]
-    str directionX, [r1, #8]
-    str directionY, [r1, #12]
+    ldr r1, =gameData
+    str xCoord,     [r1, #8]
+    str yCoord,     [r1, #12]
+    str directionX, [r1, #16]
+    str directionY, [r1, #20]
     
     // Clearing aliases
     .unreq  ballSize
