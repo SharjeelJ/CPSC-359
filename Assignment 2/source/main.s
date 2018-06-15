@@ -47,7 +47,7 @@ main:
     mov         gameLives, #3                       // Stores the default value for the game lives
     mov         ballPosition, #800                  // Stores the default value for the ball position
     mov         ballDirection, #0                   // Stores the default value for the ball direction (0 = not moving, 1 = up, 2 = down)
-    mov         paddlePosition, #800                // Stores the default value for the paddle position
+    mov         paddlePosition, #850                // Stores the default value for the paddle position
 
     // Function that is run forever in a loop
     loopedProgram:
@@ -104,19 +104,17 @@ main:
         mov     r2, #0                              // Passes in the Y pixel from where the image will start drawing on the display
         bl      drawImage                           // Calls the function to print to the display
         // Calls the function to print out the paddle image to the display
-        ldr     r0, =paddleImage                    // Passes in the paddle image
+        ldr     r0, =paddle                    // Passes in the paddle image
         mov     r1, paddlePosition                  // Passes in the X pixel from where the image will start drawing on the display
         mov     r2, #800                            // Passes in the Y pixel from where the image will start drawing on the display
         bl      drawImage                           // Calls the function to print to the display
         // Calls the function to print out the paddle image to the display
         ldr     r0, =background                    // Passes in the paddle image
-        mov     r1, #600                  			// Passes in the X pixel from where the image will start drawing on the display
+        mov     r1, #500                  			// Passes in the X pixel from where the image will start drawing on the display
         mov     r2, #50                            // Passes in the Y pixel from where the image will start drawing on the display
-        //bl      drawImage                           // Calls the function to print to the display
+        bl      drawImage                           // Calls the function to print to the display
         //	Calls the function to print the bricks to the display
-        //mov     r0, #600                  			// Passes in the X pixel from where the image will start drawing on the display
-        //mov     r1, #205                            // Passes in the Y pixel from where the image will start drawing on the display
-        //bl		drawBrick
+        bl		drawBrick
         notActiveGame:
 
         // Done playing code (end game screen)
@@ -128,9 +126,10 @@ main:
         notDoneGame:
 
 		// Initializing ball to start a 0,0, going bottom right
-		ldr		r0, =backgroundImage
-		ldr		r1, =ballStatus
-      //  bl        ballMovement
+		ldr		r0, =ballImage
+		mov		r1, #0
+		mov		r2, #0
+//        bl        ballMovement
 
         // Loops the program
         bl      loopedProgram                       // Calls itself to keep looping
@@ -166,13 +165,3 @@ programCreator: .asciz      "Created by Sharjeel Junaid, Keegan Barnett, Bader A
 // Function that stores a list of all the function locations correlating to the SNES controller's buttons
 //buttonsList:
 //    .word pressedB, pressedY, pressedSelect, pressedStart, pressedUp, pressedDown, pressedLeft, pressedRight, pressedA, pressedX, pressedL, pressedR
-
-// Attributes of the ball
-.global	ballStatus
-ballStatus:
-	.int	0		// X coordinate
-	.int	0		// Y coordinate
-	.int	1		// X direction
-	.int	1		// Y direction
-
-
