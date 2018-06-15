@@ -9,6 +9,7 @@ ballMovement:
     push    {r4 - r10, fp, lr}
     
     // Creating aliases for registers
+    ballSize            .req    r3  // Size of the ball in X and Y
     xCoord              .req    r4  // X coordinate of ball
     yCoord              .req    r5  // Y coordinate of ball
     backgroundWidth     .req    r6
@@ -16,16 +17,20 @@ ballMovement:
     directionX          .req    r8  // Whether or not X is in the positive or negative direction
     directionY          .req    r9  // Whether or not Y is in the positive or negative direction
     shift               .req    r10 // to be multiplied with directionX or directionY
-        
+    
+    // Copying dimensions of the background to registers and subtracting them by the size of the ball
+    ldr backgroundWidth,    [r0]
+    ldr backgroundHeight,   [r0, #4]
+    ldr r2, =ballImage
+    ldr ballSize, [r2]              // Getting the ball size
+    sub backgroundWidth, ballSize   // Subtracting the width with the ball size
+    sub backgroundHeight, ballSize  // Subtracting the height with the ball size
+     
     // Copying the status of the ball into registers
     ldr xCoord,     [r1]
     ldr yCoord,     [r1, #4]
     ldr directionX, [r1, #8]
     ldr directionY, [r1, #12]
-    
-    // Copying dimensions of the background to registers
-    ldr backgroundWidth,    [r0]
-    ldr backgroundHeight,   [r0, #4]
     
     // Determining whether the ball will go in either a positive or negative x and y direction
     cmp     xCoord, #0
@@ -43,10 +48,6 @@ ballMovement:
     mla r2, directionY, shift, yCoord
     bl  drawImage
     
-    // Setting to update the ball every 1000 microseconds
-    mov r0, #1000
-    bl  delayMicroseconds
-    
     // Updating the status of the ball
     ldr r1, =ballStatus
     str xCoord,     [r1]
@@ -55,6 +56,7 @@ ballMovement:
     str directionY, [r1, #12]
     
     // Clearing aliases
+    .unreq  ballSize
     .unreq  xCoord
     .unreq  yCoord
     .unreq  backgroundWidth
