@@ -5,8 +5,8 @@
 //Takes initial x, y coordinate as input
 //Starting y position 205
 //offset brick distance + 2
-.global drawBrick
-drawBrick:
+.global drawBricks
+drawBricks:
 	// Stores the existing variable registers to the stack to abide to the APCS
     push        {r4 - r10, fp, lr}                  // Pushes the specified registers to the stack to preserve them
 
