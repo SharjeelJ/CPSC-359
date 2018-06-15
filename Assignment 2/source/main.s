@@ -85,12 +85,12 @@ main:
         // Left button code
         cmp     pressedButton, #6                   // Checks to see if the Left button has been pressed
         ldreq   r0, [gameData, #24]                 // Gets the current position of the paddle
-        subeq   r0, #10                             // Moves the pixels of the paddle to the left
+        subeq   r0, #2                              // Moves the pixels of the paddle to the left
         streq   r0, [gameData, #24]                 // Stores the updated paddle position
         // Right button code
         cmp     pressedButton, #7                   // Checks to see if the Right button has been pressed
         ldreq   r0, [gameData, #24]                 // Gets the current position of the paddle
-        addeq   r0, #10                             // Moves the pixels of the paddle to the right
+        addeq   r0, #2                              // Moves the pixels of the paddle to the right
         streq   r0, [gameData, #24]                 // Stores the updated paddle position
         // General code
         // Calls the function to print out the background image to the display

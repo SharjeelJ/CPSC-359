@@ -15,10 +15,8 @@ drawBricks:
 	pixelY	.req	r2
 	offset	.req	r5
 	brickNum	.req	r6
-	
-	
+
 	mov	offset, #0
-	mov	pixelX,	#500								//Starting X position for brick
 	mov brickNum, #10								//Number of bricks per row
 	// Loop run to print out the Y pixels to the display
 
@@ -27,6 +25,7 @@ drawBricks:
     redLoop:
         // Adds a pixel to the display on the X axis
         ldr     r0, =redBrickImage   				// Loads the image data using the offsetted address
+        mov     pixelX, #500                        //Starting X position for brick
         add 	pixelX, offset						//Add the offset to the current X position
         mov		pixelY, #204						//Sets the Y position for the current row
         bl 		drawImage
@@ -40,11 +39,11 @@ drawBricks:
 
 		mov counter, #0								//Reset counter to 0
 		mov offset, #0								//Reset brick offset to 0
-		mov pixelX, #500
 	//Loop run to print out the pink bricks to the display
 	pinkLoop:
 		// Adds a pixel to the display on the X axis
         ldr     r0, =pinkBrickImage   				// Loads the image data using the offsetted address
+        mov     pixelX, #500                        //Starting X position for brick
         add 	pixelX, offset						//Adds the offset to the current X position
         mov		pixelY, #241						//Sets the Y position for the current row
         bl 		drawImage
@@ -59,11 +58,11 @@ drawBricks:
         
 		mov counter, #0								//Reset counter to 0
 		mov offset, #0								//Reset brick offset to 0
-		mov pixelX, #500
 	//Loop run to print out the pink bricks to the display
 	orangeLoop:
 		// Adds a pixel to the display on the X axis
         ldr     r0, =orangeBrickImage   			// Loads the image data using the offsetted address
+        mov     pixelX, #500                        //Starting X position for brick
         add 	pixelX, offset						//Adds the offset to the current X position
         mov		pixelY, #278						//Sets the Y position for the current row
         bl 		drawImage
@@ -78,11 +77,11 @@ drawBricks:
         
 		mov counter, #0								//Reset counter to 0
 		mov offset, #0								//Reset brick offset to 0
-		mov pixelX, #500
 	//Loop run to print out the pink bricks to the display
 	greenLoop:
 		// Adds a pixel to the display on the X axis
         ldr     r0, =greenBrickImage   		    	// Loads the image data using the offsetted address
+        mov     pixelX, #500                        //Starting X position for brick
         add 	pixelX, offset	  					//Adds offset to the current X position
         mov		pixelY, #315						//Sets the Y position for the current row
         bl 		drawImage
