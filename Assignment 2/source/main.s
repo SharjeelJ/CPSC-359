@@ -64,8 +64,8 @@ main:
         // General code
         // Calls the function to print out the background image to the display
         ldr     r0, =backgroundImage                // Passes in the background image
-        mov     r1, #0                              // Passes in the X pixel from where the image will start drawing on the display
-        mov     r2, #0                              // Passes in the Y pixel from where the image will start drawing on the display
+        mov     r1, #500                            // Passes in the X pixel from where the image will start drawing on the display
+        mov     r2, #50                             // Passes in the Y pixel from where the image will start drawing on the display
         bl      drawImage                           // Calls the function to print to the display
         notMenu:
 
@@ -95,21 +95,16 @@ main:
         // General code
         // Calls the function to print out the background image to the display
         ldr     r0, =backgroundImage                // Passes in the background image
-        mov     r1, #0                              // Passes in the X pixel from where the image will start drawing on the display
-        mov     r2, #0                              // Passes in the Y pixel from where the image will start drawing on the display
+        mov     r1, #500                            // Passes in the X pixel from where the image will start drawing on the display
+        mov     r2, #50                             // Passes in the Y pixel from where the image will start drawing on the display
         bl      drawImage                           // Calls the function to print to the display
         // Calls the function to print out the paddle image to the display
-        ldr     r0, =paddle                         // Passes in the paddle image
+        ldr     r0, =paddleImage                    // Passes in the paddle image
         ldreq   r1, [gameData, #24]                 // Passes in the X pixel from where the image will start drawing on the display
         mov     r2, #800                            // Passes in the Y pixel from where the image will start drawing on the display
         bl      drawImage                           // Calls the function to print to the display
-        // Calls the function to print out the background image to the display
-        ldr     r0, =background                     // Passes in the background image
-        mov     r1, #500                  	        // Passes in the X pixel from where the image will start drawing on the display
-        mov     r2, #50                             // Passes in the Y pixel from where the image will start drawing on the display
-        bl      drawImage                           // Calls the function to print to the display
         //	Calls the function to print the bricks to the display
-        bl		drawBrick
+        bl		drawBricks
         notActiveGame:
 
         // Done playing code (end game screen)
@@ -121,9 +116,9 @@ main:
         notDoneGame:
 
 	    // Initializing ball to start a 0,0, going bottom right
-	ldr	r0, =backgroundImage
+	    ldr     r0, =backgroundImage
         mov     r1, gameData
-        bl      ballMovement
+//        bl      ballMovement
 
         // Loops the program
         bl      loopedProgram                       // Calls itself to keep looping
@@ -159,10 +154,10 @@ programCreator: .asciz      "Created by Sharjeel Junaid, Keegan Barnett, Bader A
 // Data structure containing all the game data
 .global gameData
 gameData:
-    .int    0    // Game score
-    .int    3    // Game lives
-    .int    0    // Ball X position
-    .int    0    // Ball Y position
-    .int    1    // Ball X direction (either 1 or -1)
-    .int    1    // Ball Y direction (either 1 or -1)
-    .int    850  // Paddle position
+    .int        0                                   // Game score
+    .int        3                                   // Game lives
+    .int        0                                   // Ball X position
+    .int        0                                   // Ball Y position
+    .int        1                                   // Ball X direction (either 1 or -1)
+    .int        1                                   // Ball Y direction (either 1 or -1)
+    .int        850                                 // Paddle position
