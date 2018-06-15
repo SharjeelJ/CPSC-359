@@ -125,11 +125,11 @@ main:
         moveq   gameState, #0                       // Sets the game state value to the main menu
         notDoneGame:
 
-		// Initializing ball to start a 0,0, going bottom right
-		ldr		r0, =ballImage
-		mov		r1, #0
-		mov		r2, #0
-//        bl        ballMovement
+	// Initializing ball to start a 0,0, going bottom right
+	ldr		r0, =ballImage
+	ldr		r1, =ballStatus
+        bl      ballMovement
+
 
         // Loops the program
         bl      loopedProgram                       // Calls itself to keep looping
@@ -165,3 +165,11 @@ programCreator: .asciz      "Created by Sharjeel Junaid, Keegan Barnett, Bader A
 // Function that stores a list of all the function locations correlating to the SNES controller's buttons
 //buttonsList:
 //    .word pressedB, pressedY, pressedSelect, pressedStart, pressedUp, pressedDown, pressedLeft, pressedRight, pressedA, pressedX, pressedL, pressedR
+
+// Position and direction of the ball are defined in this structure
+.global ballStatus
+ballStatus:
+	.int	0	// X coordinate of ball
+	.int	0	// Y coordinate of ball
+	.int	1	// X direction (either 1 or -1)
+	.int	1	// Y direction (either 1 or -1)
