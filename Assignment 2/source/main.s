@@ -121,9 +121,9 @@ main:
         notDoneGame:
 
 	    // Initializing ball to start a 0,0, going bottom right
-	    ldr		r0, =ballImage
+	ldr	r0, =backgroundImage
         mov     r1, gameData
-//        bl      ballMovement
+        bl      ballMovement
 
         // Loops the program
         bl      loopedProgram                       // Calls itself to keep looping
