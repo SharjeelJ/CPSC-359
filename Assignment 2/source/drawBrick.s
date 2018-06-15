@@ -19,10 +19,10 @@ drawBrick:
 	
 	mov	offset, #0
 	mov	pixelX,	#500								//Starting X position for brick
-	mov brickNum, #5								//Number of bricks per row
+	mov brickNum, #10								//Number of bricks per row
 	// Loop run to print out the Y pixels to the display
 
-        mov     counter, #1                         // Initializes a loop iteration counter
+        mov     counter, #0                         // Initializes a loop iteration counter
     // Loop run to print out the red bricks to the display
     redLoop:
         // Adds a pixel to the display on the X axis
@@ -36,9 +36,9 @@ drawBrick:
         // Increments the iteration counter and keeps printing to the X axis
         add     counter, #1                         // Increments the loop iteration counter
         cmp     counter, brickNum                 	// Checks to see if there are remaining pixels to print in the current column
-        ble     redLoop                             // Loops to print the next brick on the X axis
+        blt     redLoop                             // Loops to print the next brick on the X axis
 
-		mov counter, #1								//Reset counter to 0
+		mov counter, #0								//Reset counter to 0
 		mov offset, #0								//Reset brick offset to 0
 		mov pixelX, #500
 	//Loop run to print out the pink bricks to the display
@@ -54,10 +54,10 @@ drawBrick:
         // Increments the iteration counter and keeps printing to the X axis
         add     counter, #1                         // Increments the loop iteration counter
         cmp     counter, brickNum                 	// Checks to see if there are remaining pixels to print in the current column
-        ble     pinkLoop                             // Loops to print the next brick on the X axis
+        blt     pinkLoop                             // Loops to print the next brick on the X axis
         
         
-		mov counter, #1								//Reset counter to 0
+		mov counter, #0								//Reset counter to 0
 		mov offset, #0								//Reset brick offset to 0
 		mov pixelX, #500
 	//Loop run to print out the pink bricks to the display
@@ -73,10 +73,10 @@ drawBrick:
         // Increments the iteration counter and keeps printing to the X axis
         add     counter, #1                         // Increments the loop iteration counter
         cmp     counter, brickNum                 	// Checks to see if there are remaining pixels to print in the current column
-        ble     orangeLoop                           // Loops to print the next brick on the X axis
+        blt     orangeLoop                           // Loops to print the next brick on the X axis
         
         
-		mov counter, #1								//Reset counter to 0
+		mov counter, #0								//Reset counter to 0
 		mov offset, #0								//Reset brick offset to 0
 		mov pixelX, #500
 	//Loop run to print out the pink bricks to the display
@@ -92,7 +92,7 @@ drawBrick:
         // Increments the iteration counter and keeps printing to the X axis
         add     counter, #1                         // Increments the loop iteration counter
         cmp     counter, brickNum                 	// Checks to see if there are remaining pixels to print in the current column
-        ble     greenLoop                           // Loops to print the next brick on the X axis
+        blt     greenLoop                           // Loops to print the next brick on the X axis
 
 	drawScore:
 		ldr		r0, =ScoreImage
