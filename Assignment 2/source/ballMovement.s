@@ -26,6 +26,7 @@ ballMovement:
     sub backgroundHeight, ballSize  // Subtracting the height with the ball size
      
     // Copying the status of the ball into registers
+    ldr r1, =gameData
     ldr xCoord,     [r1, #8]
     ldr yCoord,     [r1, #12]
     ldr directionX, [r1, #16]
@@ -43,6 +44,7 @@ ballMovement:
     
     // Drawing the ball
     ldr r0, =ballImage
+    mov shift, #10      // TEMP (seems to have fixed seg fault for now)
     mla r1, directionX, shift, xCoord
     mla r2, directionY, shift, yCoord
     bl  drawImage

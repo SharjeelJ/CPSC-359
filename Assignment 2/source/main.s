@@ -11,14 +11,11 @@ main:
     pressedButton   .req    r4                      // Creates an alias for the presed button register
     gameState   .req        r5                      // Creates an alias for the game state register
     gameData    .req        r6                      // Creates an alias for the game data register
+    menuSelection   .req    r7                      // Creates an alias for the menu selection register
 
     // Initializes the frame buffer and stores the display's information
     ldr         r0, =frameBufferData                // Stores the frame buffer information in a temporary register
     bl          initFbInfo                          // Updates the frame buffer register's information
-
-    // Prints out the name of the program's creator
-    ldr         r0, =programCreator                 // Passes in the string and makes sure it is null terminated
-    bl          printf                              // Calls the function to print to the console
 
     // Sets GPIO pin 9 (Latch) to output
     mov         r0, #9                              // Passes in the GPIO pin number as a parameter
@@ -40,6 +37,7 @@ main:
     mov         gameState, #0                       // Stores the default value for the game state (0 = main menu, 1 = currently playing, 2 = done playing)
     ldr         gameData, =gameData                 // Loads the address for the game data structure into a register
     freshRun:
+    mov         menuSelection, #0                   // Stores the default value for the menu selection
     mov         r0, #0                              // Stores the default value for the game score, ball X and Y position and ball X and Y direction
     str         r0, [gameData, #0]                  // Stores the default game score
     str         r0, [gameData, #8]                  // Stores the default X position of the ball
@@ -50,6 +48,19 @@ main:
     str         r0, [gameData, #4]                  // Stores the default value for the game lives
     mov         r0, #850                            // Stores the default position for the paddle
     str         r0, [gameData, #24]                 // Stores the default position for the paddle
+    mainMenu:
+
+    // Calls the function to print out the black screen image to the display
+    ldr         r0, =clearImage                     // Passes in the black image
+    mov         r1, #0                              // Passes in the X pixel from where the image will start drawing on the display
+    mov         r2, #0                              // Passes in the Y pixel from where the image will start drawing on the display
+    bl          drawImage                           // Calls the function to print to the display
+
+    // Calls the function to print out the menu selection image
+    ldreq       r0, =arrowImage                     // Passes in the menu selection arrow image
+    moveq       r1, #750                            // Passes in the X pixel from where the image will start drawing on the display
+    moveq       r2, #300                            // Passes in the Y pixel from where the image will start drawing on the display
+    bleq        drawImage                           // Calls the function to print to the display
 
     // Function that is run forever in a loop
     loopedProgram:
@@ -64,18 +75,56 @@ main:
         // Main menu code
         cmp     gameState, #0                       // Checks to see if the game is currently at the main menu
         bne     notMenu                             // Skips the code if the game is not at the main menu
-        // Select button code
-        cmp     pressedButton, #2                   // Checks to see if the Select button has been pressed
-        beq     endProgram                          // Calls the function to end the program
-        // Start button code
-        cmp     pressedButton, #3                   // Checks to see if the Start button has been pressed
+        // Up button code
+        cmp     pressedButton, #4                   // Checks to see if the Up button has been pressed
+        moveq   menuSelection, #0                   // Sets the menu selection to start the game
+        ldreq   r0, =clearImage                     // Passes in the menu selection arrow image
+        moveq   r1, #0                              // Passes in the X pixel from where the image will start drawing on the display
+        moveq   r2, #0                              // Passes in the Y pixel from where the image will start drawing on the display
+        bleq    drawImage                           // Calls the function to print to the display
+        ldreq   r0, =arrowImage                     // Passes in the menu selection arrow image
+        moveq   r1, #750                            // Passes in the X pixel from where the image will start drawing on the display
+        moveq   r2, #300                            // Passes in the Y pixel from where the image will start drawing on the display
+        bleq    drawImage                           // Calls the function to print to the display
+        // Down button code
+        cmp     pressedButton, #5                   // Checks to see if the Down button has been pressed
+        moveq   menuSelection, #1                   // Sets the menu selection to quit the game
+        ldreq   r0, =clearImage                     // Passes in the menu selection arrow image
+        moveq   r1, #0                              // Passes in the X pixel from where the image will start drawing on the display
+        moveq   r2, #0                              // Passes in the Y pixel from where the image will start drawing on the display
+        bleq    drawImage                           // Calls the function to print to the display
+        ldreq   r0, =arrowImage                     // Passes in the menu selection arrow image
+        moveq   r1, #750                            // Passes in the X pixel from where the image will start drawing on the display
+        moveq   r2, #400                            // Passes in the Y pixel from where the image will start drawing on the display
+        bleq    drawImage                           // Calls the function to print to the display
+        // A button code
+        cmp     pressedButton, #8                   // Checks to see if the A button has been pressed
+        cmpeq   menuSelection, #0                   // Checks to see what menu selection was indicating when the button was pressed
         moveq   gameState, #1                       // Sets the game state value to make the game active
-        beq     freshRun                            // Calls the function to run a clean instance of the game
+        beq     mainMenu                            // Calls the function to run a clean instance of the game
+        cmp     pressedButton, #8                   // Checks to see if the A button has been pressed
+        cmpeq   menuSelection, #1                   // Checks to see what menu selection was indicating when the button was pressed
+        beq     endProgram                          // Calls the function to end the program
         // General code
-        // Calls the function to print out the background image to the display
-        ldr     r0, =backgroundImage                // Passes in the background image
-        mov     r1, #500                            // Passes in the X pixel from where the image will start drawing on the display
-        mov     r2, #50                             // Passes in the Y pixel from where the image will start drawing on the display
+        // Calls the function to print out the arkanoid text image to the display
+        ldr     r0, =arkanoidImage                  // Passes in the arkanoid image
+        mov     r1, #600                            // Passes in the X pixel from where the image will start drawing on the display
+        mov     r2, #100                            // Passes in the Y pixel from where the image will start drawing on the display
+        bl      drawImage                           // Calls the function to print to the display
+        // Calls the function to print out the start text image to the display
+        ldr     r0, =startImage                     // Passes in the start image
+        mov     r1, #850                            // Passes in the X pixel from where the image will start drawing on the display
+        mov     r2, #300                            // Passes in the Y pixel from where the image will start drawing on the display
+        bl      drawImage                           // Calls the function to print to the display
+        // Calls the function to print out the quit text image to the display
+        ldr     r0, =quitImage                      // Passes in the quit image
+        mov     r1, #850                            // Passes in the X pixel from where the image will start drawing on the display
+        mov     r2, #400                            // Passes in the Y pixel from where the image will start drawing on the display
+        bl      drawImage                           // Calls the function to print to the display
+        // Calls the function to print out the program creators image to the display
+        ldr     r0, =creatorsNameImage              // Passes in the program creators image
+        mov     r1, #450                            // Passes in the X pixel from where the image will start drawing on the display
+        mov     r2, #500                            // Passes in the Y pixel from where the image will start drawing on the display
         bl      drawImage                           // Calls the function to print to the display
         notMenu:
 
@@ -93,7 +142,8 @@ main:
         streq   r0, [gameData, #20]                 // Stores the new Y direction of the ball to let the game start
         // Select button code
         cmp     pressedButton, #2                   // Checks to see if the Select button has been pressed
-        beq     endProgram                          // Calls the function to end the program
+        moveq   gameState, #0                       // Sets the game state value to return to the main menu
+        beq     mainMenu                            // Calls the function to return to the main menu of the game
         // Start button code
         cmp     pressedButton, #3                   // Checks to see if the Start button has been pressed
         beq     freshRun                            // Calls the function to run a clean instance of the game
@@ -102,11 +152,15 @@ main:
         ldreq   r0, [gameData, #24]                 // Gets the current position of the paddle
         subeq   r0, #2                              // Moves the pixels of the paddle to the left
         streq   r0, [gameData, #24]                 // Stores the updated paddle position
+//        cmpeq   r0, #600                           // Checks to see if the paddle is about to hit the left edge
+//        strge   r0, [gameData, #24]                 // Stores the updated paddle position
         // Right button code
         cmp     pressedButton, #7                   // Checks to see if the Right button has been pressed
         ldreq   r0, [gameData, #24]                 // Gets the current position of the paddle
         addeq   r0, #2                              // Moves the pixels of the paddle to the right
         streq   r0, [gameData, #24]                 // Stores the updated paddle position
+//        cmpeq   r0, #1200                           // Checks to see if the paddle is about to hit the right edge
+//        strlt   r0, [gameData, #24]                 // Stores the updated paddle position
         // General code
         // Calls the function to print out the background image to the display
         ldr     r0, =backgroundImage                // Passes in the background image
@@ -122,7 +176,7 @@ main:
         bl		drawBricks
         notActiveGame:
 
-        // Done playing code (end game screen)
+        // Game over code
         cmp     gameState, #2                       // Checks to see if the game is done playing
         bne     notDoneGame                         // Skips the code if the game is not currently done playing
         // Any button code
@@ -133,7 +187,7 @@ main:
 	    // Initializing ball to start a 0,0, going bottom right
 	    ldr     r0, =backgroundImage
         mov     r1, gameData
-//        bl      ballMovement
+        bl      ballMovement
 
         // Loops the program
         bl      loopedProgram                       // Calls itself to keep looping
@@ -153,19 +207,10 @@ endProgram:
 
     // Pops the stored existing variable registers from the stack to abide to the APCS
     pop         {r4 - r6, fp, lr}                   // Pops the specified registers from the stack to preserve them
-
-    end:
-        b       end                                 // Keeps looping forever
+    bx          lr                                  // Branches back to the original code to quit the program
 
 @ Data section
 .section .data
-
-// Function to print out the program creator string to the console
-programCreator: .asciz      "Created by Sharjeel Junaid, Keegan Barnett, Bader Abdulwaseem\n"
-
-// Function that stores a list of all the function locations correlating to the SNES controller's buttons
-//buttonsList:
-//    .word pressedB, pressedY, pressedSelect, pressedStart, pressedUp, pressedDown, pressedLeft, pressedRight, pressedA, pressedX, pressedL, pressedR
 
 // Data structure containing all the game data
 .global gameData
