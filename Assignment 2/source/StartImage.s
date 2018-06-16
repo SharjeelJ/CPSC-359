@@ -1,5 +1,5 @@
-.global StartImage
-StartImage:
+.global startImage
+startImage:
 	.int 136
 	.int 61
 

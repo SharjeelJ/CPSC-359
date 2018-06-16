@@ -1,5 +1,5 @@
-.global QuitImage
-QuitImage:
+.global quitImage
+quitImage:
 	.int 119
 	.int 61
 

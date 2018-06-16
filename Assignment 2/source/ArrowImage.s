@@ -1,5 +1,5 @@
-.global ArrowImage
-ArrowImage:
+.global arrowImage
+arrowImage:
 	.int 68
 	.int 81
 

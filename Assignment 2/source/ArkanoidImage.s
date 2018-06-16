@@ -1,5 +1,5 @@
-.global ArkanoidImage
-ArkanoidImage:
+.global arkanoidImage
+arkanoidImage:
 	.int	625
 	.int	152
 

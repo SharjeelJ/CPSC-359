@@ -1,5 +1,5 @@
-.global CreatorsNameImage
-CreatorsNameImage:
+.global creatorsNameImage
+creatorsNameImage:
 	.int 965
 	.int 113
 
