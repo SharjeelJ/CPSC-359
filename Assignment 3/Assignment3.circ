@@ -59,6 +59,81 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <tool lib="1" name="AND Gate"/>
     <tool lib="1" name="OR Gate"/>
   </toolbar>
+  <circuit name="main">
+    <a name="circuit" val="main"/>
+    <a name="clabel" val=""/>
+    <a name="clabelup" val="east"/>
+    <a name="clabelfont" val="SansSerif plain 12"/>
+    <wire from="(360,150)" to="(360,280)"/>
+    <wire from="(110,650)" to="(110,660)"/>
+    <wire from="(110,670)" to="(110,680)"/>
+    <wire from="(450,380)" to="(450,390)"/>
+    <wire from="(160,680)" to="(210,680)"/>
+    <wire from="(360,580)" to="(360,780)"/>
+    <wire from="(330,500)" to="(450,500)"/>
+    <wire from="(160,670)" to="(330,670)"/>
+    <wire from="(70,650)" to="(110,650)"/>
+    <wire from="(70,680)" to="(110,680)"/>
+    <wire from="(360,380)" to="(360,480)"/>
+    <wire from="(360,280)" to="(360,380)"/>
+    <wire from="(360,480)" to="(360,580)"/>
+    <wire from="(160,660)" to="(320,660)"/>
+    <wire from="(360,380)" to="(450,380)"/>
+    <wire from="(360,480)" to="(450,480)"/>
+    <wire from="(360,280)" to="(450,280)"/>
+    <wire from="(360,580)" to="(450,580)"/>
+    <wire from="(360,150)" to="(450,150)"/>
+    <wire from="(330,780)" to="(360,780)"/>
+    <wire from="(230,290)" to="(450,290)"/>
+    <wire from="(160,650)" to="(310,650)"/>
+    <wire from="(230,290)" to="(230,330)"/>
+    <wire from="(110,660)" to="(130,660)"/>
+    <wire from="(110,670)" to="(130,670)"/>
+    <wire from="(210,380)" to="(210,680)"/>
+    <wire from="(320,490)" to="(320,660)"/>
+    <wire from="(330,500)" to="(330,670)"/>
+    <wire from="(310,590)" to="(450,590)"/>
+    <wire from="(310,590)" to="(310,650)"/>
+    <wire from="(320,490)" to="(450,490)"/>
+    <comp loc="(480,390)" name="4 bit register">
+      <a name="label" val="R0"/>
+    </comp>
+    <comp lib="1" loc="(230,330)" name="OR Gate">
+      <a name="facing" val="north"/>
+    </comp>
+    <comp lib="0" loc="(330,780)" name="Clock"/>
+    <comp loc="(160,650)" name="Decoder">
+      <a name="label" val="2-4 Decoder"/>
+    </comp>
+    <comp loc="(820,590)" name="ALU">
+      <a name="facing" val="south"/>
+      <a name="label" val="ALU"/>
+    </comp>
+    <comp lib="1" loc="(310,330)" name="OR Gate">
+      <a name="facing" val="north"/>
+    </comp>
+    <comp loc="(480,590)" name="4 bit register">
+      <a name="label" val="R2"/>
+    </comp>
+    <comp lib="0" loc="(70,650)" name="Pin">
+      <a name="tristate" val="false"/>
+    </comp>
+    <comp lib="6" loc="(223,41)" name="Text">
+      <a name="text" val="Circuit by Bader Abdulwaseem and Keegan Barnett"/>
+    </comp>
+    <comp loc="(480,290)" name="4 bit register">
+      <a name="label" val="MDR"/>
+    </comp>
+    <comp loc="(480,490)" name="4 bit register">
+      <a name="label" val="R1"/>
+    </comp>
+    <comp lib="0" loc="(70,680)" name="Pin">
+      <a name="tristate" val="false"/>
+    </comp>
+    <comp loc="(480,160)" name="2 bit register">
+      <a name="label" val="MAR"/>
+    </comp>
+  </circuit>
   <circuit name="Logic unit">
     <a name="circuit" val="Logic unit"/>
     <a name="clabel" val=""/>
