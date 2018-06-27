@@ -7,20 +7,38 @@ OBJREF 0x40 // Needed for method invokation
 
 .main
 
+.var  // local variables for main method
+a
+b
+total
+.end-var
+
+  start: BIPUSH 0x3 // Initializing a and b for testing
+  DUP
+  LDC_W OBJREF  // Prepare for method call
+  INVOKEVIRTUAL imul  // Calling multiply method for testing
+
 .end-main
 
 // Power method
 // PARAMS: X = Base, Y = Exponent
 // RETURNS: Product
-.method power(x, y)
+.method ipower(x, y)
 
 .end-method
 
 // Multiply method
 // PARAMS: X = Multiplier, Y = Multiplicand
 // RETURNS: Product
-.method mul(x, y)
+.method imul(x, y)
 
+.var  // local variables for the multiply method
+  m
+  c
+  o
+.end-var
+  BIPUSH 0x0  // Initializing m = 0
+  
 
 
 
