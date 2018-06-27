@@ -237,6 +237,6 @@ in1	OPC=H=-1
 	MAR=SP=SP+1			// increment SP; wait for read
 	TOS=MDR;wr ; goto Main1		// Write
 
-ineg1 H = TOS
-ineg2 MAR = SP
-ineg3 TOS = MDR = -H; wr; goto Main1
+ineg1 H = TOS // Getting the input from the top of the stack
+ineg2 MAR = SP  // Getting the address of the stack pointer
+ineg3 TOS = MDR = -H; wr; goto Main1  // Writing the negation of H to the top of the stack
