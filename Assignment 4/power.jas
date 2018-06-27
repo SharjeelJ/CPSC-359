@@ -1,10 +1,28 @@
 // Author: Bader Adbulwaseem, Sharjeel Junaid, Keegan Barnett
 
+
+.constant
+OBJREF 0x40 // Needed for method invokation
+.end-constant
+
 .main
 
-
-
-
-
-
 .end-main
+
+// Power method
+// PARAMS: X = Base, Y = Exponent
+// RETURNS: Product
+.method power(x, y)
+
+.end-method
+
+// Multiply method
+// PARAMS: X = Multiplier, Y = Multiplicand
+// RETURNS: Product
+.method mul(x, y)
+
+
+
+
+
+.end-method   // End of multiply method
