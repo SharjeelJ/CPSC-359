@@ -246,5 +246,5 @@ ifeven1 goto Main1 // Start of IFEVEN
 ifeven1	MAR = SP = SP - 1; rd		// Read in second word at the top of the stack
 ifeven2 OPC = TOS			// Save TOS in OPC temporarily
 ifeven3 TOS = MDR			// Put new top of stack in TOS
-ifeven4	H = 1				//Set H to 1 
-ifeven5 Z = H AND OPC; if (Z) goto ; else goto F
+ifeven4	H = 1				//Set H to 1
+ifeven5 Z = H AND OPC; if (Z) goto T; else goto F
