@@ -44,6 +44,7 @@
 .label	out1		0xFD
 .label	in1		0xFC
 .label  ineg1 0x74
+.label  ifeven1 0x22
 
 // default instruction to place in any unused addresses of the control store
 .default	goto err1
@@ -240,3 +241,5 @@ in1	OPC=H=-1
 ineg1 H = TOS // Getting the input from the top of the stack
 ineg2 MAR = SP  // Getting the address of the stack pointer
 ineg3 TOS = MDR = -H; wr; goto Main1  // Writing the negation of H to the top of the stack
+
+ifeven1 // Start of IFEVEN
