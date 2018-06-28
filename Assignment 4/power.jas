@@ -49,6 +49,7 @@ total
   ISTORE m
   ISTORE i
 
+
 .end-method   // End of multiply method
 
 // PARAMS: x
@@ -56,12 +57,13 @@ total
 // Takes a number and gives it's absolute value
 .method abs(x)
 
-
-
-positive:
-
-negative:
-
+IFLT negative // IF the top of the stack is negative, branch to negative and turn it positive with INEG
+GOTO pass // Otherwise pass
+negative: INEG  // Negating negative number
 pass:
+.end-method
+
+// Checks to see which of the top two words is the maximum and then returns the maximum
+.method max(x, y)
 
 .end-method
