@@ -242,4 +242,4 @@ ineg1 H = TOS // Getting the input from the top of the stack
 ineg2 MAR = SP  // Getting the address of the stack pointer
 ineg3 TOS = MDR = -H; wr; goto Main1  // Writing the negation of H to the top of the stack
 
-ifeven1 // Start of IFEVEN
+ifeven1 goto Main1 // Start of IFEVEN
