@@ -20,7 +20,7 @@ total
   LDC_W OBJREF  // Prepare for method call
   ILOAD a
   ILOAD b
-  INVOKEVIRTUAL imul  // Calling multiply method for testing
+  INVOKEVIRTUAL neg  // Calling multiply method for testing
 
 .end-main
 
@@ -66,4 +66,8 @@ pass:
 // Checks to see which of the top two words is the maximum and then returns the maximum
 .method max(x, y)
 
+.end-method
+
+.method neg(x)
+INEG
 .end-method
