@@ -67,8 +67,3 @@ pass:
 .method max(x, y)
 
 .end-method
-
-.method neg(x)
-INEG
-IRETURN
-.end-method
