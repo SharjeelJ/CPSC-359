@@ -1,0 +1,765 @@
+//  Author:
+//      Sharjeel Junaid
+//  Description:
+//      Contains the two methods required by the assignment (imul and power) as
+//      well as additional methods (abs, min, and min) that are used. The program
+//      also acts as the tester for all the required code implementations
+//  Side Note:
+//      getinput() and print(result) both were used from the provided add.jas file
+//      and were untouched for the most part including their documentation. The
+//      program requires both numbers to be in 8-bit HEX and to be positive only.
+//      The result will then also be returned in 8-bit HEX with negative permutations
+//      The website used to verify the Sample Run HEX values is the following
+//      https://web.eecs.umich.edu/~pmchen/engr100/calc.html
+//  Sample Run:
+//      Enter two 8-bit hex #s...
+//      x:     12       <-- HEX for 18
+//      y:     5        <-- HEX for 5
+//      x*y:   0000005A <-- HEX for 90
+//      -x*y:  FFFFFFA6 <-- HEX for -90
+//      x*-y:  FFFFFFA6 <-- HEX for -90
+//      -x*-y: 0000005A <-- HEX for 90
+//      x^y:   001CD520 <-- HEX for 1889568
+//      -x^y:  FFE32AE0 <-- HEX for -1889568
+//      x:     Even
+//      y:     Odd
+
+// Initializes constants
+.constant
+OBJREF 0x40         // Constant needed for method invokation
+.end-constant
+
+// Main method (start of the program)
+.main
+// Initializes local variables for the current method
+.var
+x                   // Variable that will store an integer value (input 1)
+y                   // Variable that will store an integer value (input 2)
+result              // Variable that will store an integer value (output)
+.end-var
+
+// Program code that will be run
+main:
+    // Initialize variables x and y to be 0
+    BIPUSH 0x0      // 0 in hex
+    DUP             // Duplicates 0 for the second variable
+    ISTORE x        // Stores the value at the top of the stack in x
+    ISTORE y        // Stores the value at the top of the stack in y
+
+    // Prints out "Enter two 8-bit #s" to the console
+    BIPUSH 0x0a     // new line in ASCII
+    BIPUSH 0x2e     // . in ASCII
+    BIPUSH 0x2e     // . in ASCII
+    BIPUSH 0x2e     // . in ASCII
+    BIPUSH 0x73     // s in ASCII
+    BIPUSH 0x23     // # in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x78     // x in ASCII
+    BIPUSH 0x65     // e in ASCII
+    BIPUSH 0x68     // h in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x74     // t in ASCII
+    BIPUSH 0x69     // i in ASCII
+    BIPUSH 0x62     // b in ASCII
+    BIPUSH 0x2d     // - in ASCII
+    BIPUSH 0x38     // 8 in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x6f     // o in ASCII
+    BIPUSH 0x77     // w in ASCII
+    BIPUSH 0x74     // t in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x72     // r in ASCII
+    BIPUSH 0x65     // e in ASCII
+    BIPUSH 0x74     // t in ASCII
+    BIPUSH 0x6e     // n in ASCII
+    BIPUSH 0x45     // E in ASCII
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+
+    // Prints out "x:     " to the console
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x3a     // : in ASCII
+    BIPUSH 0x78     // x in ASCII
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+
+    // Gets the inputted value from the console and stores it in x
+    LDC_W OBJREF    // Prepares for a method call
+    INVOKEVIRTUAL getInput  // Calls the method to get the input from the console (returns the result value on the top of the stack)
+    ISTORE x        // Stores the returned value in x
+
+    // Prints out "y:     " to the console
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x3a     // : in ASCII
+    BIPUSH 0x79     // y in ASCII
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+
+    // Gets the inputted value from the console and stores it in y
+    LDC_W OBJREF    // Prepares for a method call
+    INVOKEVIRTUAL getInput  // Calls the method to get the input from the console (returns the result value on the top of the stack)
+    ISTORE y        // Stores the returned value in y
+
+    // Prints out "x*y:   RESULT" to the console
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x3a     // : in ASCII
+    BIPUSH 0x79     // y in ASCII
+    BIPUSH 0x2a     // * in ASCII
+    BIPUSH 0x78     // x in ASCII
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+
+    // Calculates x * y, stores it and prints it to the console
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD x         // Gets the stored value of x to pass in as a parameter
+    ILOAD y         // Gets the stored value of y to pass in as a parameter
+    INVOKEVIRTUAL imul // Calls the method to multiply the two values at the top of the stack (returns the result value on the top of the stack)
+    ISTORE result   // Stores the returned value in result
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD result    // Gets the stored value of result to pass in as a parameter
+    INVOKEVIRTUAL print // Calls the method to print out the passed in parameter to the console
+
+    // Prints out "-x*y:  RESULT" to the console
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x3a     // : in ASCII
+    BIPUSH 0x79     // y in ASCII
+    BIPUSH 0x2a     // * in ASCII
+    BIPUSH 0x78     // x in ASCII
+    BIPUSH 0x2d     // - in ASCII
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+
+    // Calculates -x * y, stores it and prints it to the console
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD x         // Gets the stored value of x to pass in as a parameter
+    INEG            // Negates the value of x and pushes it to the stack
+    ILOAD y         // Gets the stored value of y to pass in as a parameter
+    INVOKEVIRTUAL imul // Calls the method to multiply the two values at the top of the stack (returns the result value on the top of the stack)
+    ISTORE result   // Stores the returned value in result
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD result    // Gets the stored value of result to pass in as a parameter
+    INVOKEVIRTUAL print // Calls the method to print out the passed in parameter to the console
+
+    // Prints out "x*-y:  RESULT" to the console
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x3a     // : in ASCII
+    BIPUSH 0x79     // y in ASCII
+    BIPUSH 0x2d     // - in ASCII
+    BIPUSH 0x2a     // * in ASCII
+    BIPUSH 0x78     // x in ASCII
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+
+    // Calculates x * -y, stores it and prints it to the console
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD x         // Gets the stored value of x to pass in as a parameter
+    ILOAD y         // Gets the stored value of y to pass in as a parameter
+    INEG            // Negates the value of y and pushes it to the stack
+    INVOKEVIRTUAL imul // Calls the method to multiply the two values at the top of the stack (returns the result value on the top of the stack)
+    ISTORE result   // Stores the returned value in result
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD result    // Gets the stored value of result to pass in as a parameter
+    INVOKEVIRTUAL print // Calls the method to print out the passed in parameter to the console
+
+    // Prints out "-x*-y: RESULT" to the console
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x3a     // : in ASCII
+    BIPUSH 0x79     // y in ASCII
+    BIPUSH 0x2d     // - in ASCII
+    BIPUSH 0x2a     // * in ASCII
+    BIPUSH 0x78     // x in ASCII
+    BIPUSH 0x2d     // - in ASCII
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+
+    // Calculates -x * -y, stores it and prints it to the console
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD x         // Gets the stored value of x to pass in as a parameter
+    INEG            // Negates the value of x and pushes it to the stack
+    ILOAD y         // Gets the stored value of y to pass in as a parameter
+    INEG            // Negates the value of y and pushes it to the stack
+    INVOKEVIRTUAL imul // Calls the method to multiply the two values at the top of the stack (returns the result value on the top of the stack)
+    ISTORE result   // Stores the returned value in result
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD result    // Gets the stored value of result to pass in as a parameter
+    INVOKEVIRTUAL print // Calls the method to print out the passed in parameter to the console
+
+    // Prints out "x^y:   RESULT" to the console
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x3a     // : in ASCII
+    BIPUSH 0x79     // y in ASCII
+    BIPUSH 0x5e     // ^ in ASCII
+    BIPUSH 0x78     // x in ASCII
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+
+    // Calculates x ^ y, stores it and prints it to the console
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD x         // Gets the stored value of x to pass in as a parameter
+    ILOAD y         // Gets the stored value of y to pass in as a parameter
+    INVOKEVIRTUAL power // Calls the method to multiply the two values at the top of the stack (returns the result value on the top of the stack)
+    ISTORE result   // Stores the returned value in result
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD result    // Gets the stored value of result to pass in as a parameter
+    INVOKEVIRTUAL print // Calls the method to print out the passed in parameter to the console
+
+    // Prints out "-x^y:  RESULT" to the console
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x3a     // : in ASCII
+    BIPUSH 0x79     // y in ASCII
+    BIPUSH 0x5e     // ^ in ASCII
+    BIPUSH 0x78     // x in ASCII
+    BIPUSH 0x2d     // - in ASCII
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+
+    // Calculates -x ^ y, stores it and prints it to the console
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD x         // Gets the stored value of x to pass in as a parameter
+    INEG            // Negates the value of x and pushes it to the stack
+    ILOAD y         // Gets the stored value of y to pass in as a parameter
+    INVOKEVIRTUAL power // Calls the method to multiply the two values at the top of the stack (returns the result value on the top of the stack)
+    ISTORE result   // Stores the returned value in result
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD result    // Gets the stored value of result to pass in as a parameter
+    INVOKEVIRTUAL print // Calls the method to print out the passed in parameter to the console
+
+    // Prints out "x:     " to the console
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x3a     // : in ASCII
+    BIPUSH 0x78     // x in ASCII
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+
+    // Checks to see if x is even and prints it to the console
+    ILOAD x         // Gets the stored value of x to pass in as a parameter
+    IFEVEN xEVEN    // Branches if x is even
+xODD:
+    // Prints out "Odd" to the console
+    BIPUSH 0x64     // d in ASCII
+    BIPUSH 0x64     // d in ASCII
+    BIPUSH 0x4f     // O in ASCII
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    GOTO xEND       // Branches to the end of the checks
+xEVEN:
+    // Prints out "Even" to the console
+    BIPUSH 0x6e     // n in ASCII
+    BIPUSH 0x65     // e in ASCII
+    BIPUSH 0x76     // v in ASCII
+    BIPUSH 0x45     // E in ASCII
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+xEND:
+
+    // Prints out "y:     " to the console
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x20     // space in ASCII
+    BIPUSH 0x3a     // : in ASCII
+    BIPUSH 0x79     // y in ASCII
+    BIPUSH 0x0a     // new line in ASCII
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+
+    // Checks to see if y is even and prints it to the console
+    ILOAD y         // Gets the stored value of y to pass in as a parameter
+    IFEVEN yEVEN    // Branches if y is even
+yODD:
+    // Prints out "Odd" to the console
+    BIPUSH 0x64     // d in ASCII
+    BIPUSH 0x64     // d in ASCII
+    BIPUSH 0x4f     // O in ASCII
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    GOTO yEND       // Branches to the end of the checks
+yEVEN:
+    // Prints out "Even" to the console
+    BIPUSH 0x6e     // n in ASCII
+    BIPUSH 0x65     // e in ASCII
+    BIPUSH 0x76     // v in ASCII
+    BIPUSH 0x45     // E in ASCII
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+    out             // Prints out the character at the top of the stack to the console
+yEND:
+.end-main
+
+// Method to get the inputted integer / hex value from the console (value up 4294967295 or FFFFFFFF and ONLY positive values)
+.method getInput()
+// Initializes the local variable for the current method
+.var
+temp                // Variable that will store an integer value
+.end-var
+
+    BIPUSH 0x0      // initialize temp
+    ISTORE temp
+getInput:
+    IN              // read key press
+    DUP             // duplicate key for comparison
+    BIPUSH 0xa      // if key = cr,
+    IF_ICMPEQ return    //   return
+    DUP
+    BIPUSH 0x30     // if key < "0"
+    ISUB            //
+    IFLT getInput4  //   goto getinput4 (key is not a hex digit)
+    DUP
+    BIPUSH 0x3a     // else if key < ":"
+    ISUB            //
+    IFLT getInput2  //   goto getinput2 (key is numeric character - "0"-"9")
+    DUP
+    BIPUSH 0x41     // else if key < "A"
+    ISUB            //
+    IFLT getInput4  //   goto getinput4 (key is not a hex digit)
+    DUP
+    BIPUSH 0x46     // else if key > "F"
+    SWAP            //
+    ISUB            //
+    IFLT getInput4  //   goto getinput4 (key is not a hex digit)
+    DUP             // else (key is letter - "A"-"F")
+    OUT             //   print key
+    BIPUSH 0x37     //   convert key from character to number
+    ISUB            //
+    GOTO getInput3  //   goto getinput3
+getInput2:
+    DUP
+    OUT             // print key (numeric character)
+    BIPUSH 0x30     // convert key from character to number
+    ISUB
+getInput3:
+    ILOAD temp      // shift temp left 8 bits
+    DUP
+    IADD
+    DUP
+    IADD
+    DUP
+    IADD
+    DUP
+    IADD
+    IADD            // add key to temp
+    ISTORE temp
+    GOTO getInput   // get next key
+
+getInput4:
+    POP             // pop invalid character
+    GOTO getInput   // get next key
+
+return:
+    OUT             // print cr
+    ILOAD temp      // load temp as return value
+    IRETURN         // return
+.end-method
+
+// Method to push the passed in number to the stack which is then printed to the console
+.method print(result)
+// Initializes the local variable for the current method
+.var
+place
+index
+.end-var
+
+print:
+    BIPUSH 0x9
+                    // there are 8 nibbles in each integer--setting
+                    //   this as nine pushes 10 characters onto the
+                    //   stack, thus a total of ten printed digits,
+                    //   but setting this less does not remove the
+                    //   two leading zeros, just removes significant
+                    //   digits
+    ISTORE index
+    BIPUSH 0x1      // comparison bit
+    ISTORE place
+print1:
+    BIPUSH 0x0
+    ILOAD index     // index = index - 1
+    BIPUSH 0x1
+    ISUB
+    DUP
+    IFEQ pall       // if index = 0  goto pall
+    ISTORE index
+    ILOAD result    // else
+    ILOAD place
+    IAND            //   if 1st bit of current nibble is zero (total & place)
+    IFEQ print2     //     goto print2
+    BIPUSH 0x1      //   else set first bit of character
+    IADD
+print2:
+    ILOAD place     //   place = place << 1
+    DUP
+    IADD
+    ISTORE place
+    ILOAD result
+    ILOAD place
+    IAND            //   if 2nd bit of current nibble is zero (total & place)
+    IFEQ print3     //     goto print3
+    BIPUSH 0x2      //   else set second bit of character
+    IADD
+print3:
+    ILOAD place     //   place = place << 1
+    DUP
+    IADD
+    ISTORE place
+    ILOAD result
+    ILOAD place
+    IAND            //   if 3rd bit of current nibble is zero (total & place)
+    IFEQ print4     //     goto print4
+    BIPUSH 0x4      //   else set second bit of character
+    IADD
+print4:
+    ILOAD place     //   place = place << 1
+    DUP
+    IADD
+    ISTORE place
+    ILOAD result
+    ILOAD place
+    IAND            //   if 4th bit of current nibble is zero (total & place)
+    IFEQ print5     //     goto print5
+    BIPUSH 0x8      //   else set second bit of character
+    IADD
+print5:
+    ILOAD place     //   place = place << 1
+    DUP
+    IADD
+    ISTORE place
+    GOTO print1
+
+pall:
+    POP             // Pop off leading 0's
+    POP
+    BIPUSH 0x9
+    ISTORE index
+pall1:
+    ILOAD index     // index = index - 1
+    BIPUSH 0x1
+    ISUB
+    DUP
+    IFEQ return     // if index = 0  return
+    ISTORE index
+    DUP
+    BIPUSH 0xa      // else if character < 0xa goto pall1
+    ISUB
+    IFLT pall2
+    BIPUSH 0x37     // else convert character to "A"-"F"
+    IADD
+    OUT             // print character
+    GOTO pall1      // goto pall (prepare & print next character)
+pall2:
+    BIPUSH 0x30     // convert character to "0"-"9"
+    IADD
+    OUT             // print character
+    GOTO pall1      // goto pall1 (prepare & print next character)
+return:
+    BIPUSH 0xa      // print cr
+    OUT
+    IRETURN         // no return value
+.end-method
+
+// Method to calculate the absolute value of x and returns the result on the top of the stack
+.method abs(x)
+// Checks to see if x < 0
+    ILOAD x         // Gets the stored value of x
+    IFLT ltABS      // Branches if x < 0
+// Code run if x >= 0
+geABS:
+    ILOAD x         // Gets the stored value of x
+    GOTO return     // Branches to the return statement
+// Code run if x < 0
+ltABS:
+    ILOAD x         // Gets the stored value of x
+    INEG            // Negates the value of x and pushes it back to the stack
+    GOTO return     // Branches to the return statement
+// Returns the result back to the calling code
+return:
+    IRETURN         // Returns back to the original calling code
+.end-method
+
+// Method to get the smaller value between x and y and returns the result on the top of the stack
+.method min(x, y)
+// Checks to see whether x or y is smaller
+    ILOAD y         // Gets the stored value of y
+    ILOAD x         // Gets the stored value of x
+    ISUB            // Pushes the difference between y and x to the stack
+    IFLT y          // Branches if (y - x) < 0, so x > y
+// Code run if x <= y
+x:
+    ILOAD x         // Gets the stored value of x
+    GOTO return     // Branches to the return statement
+// Code run if y < x
+y:
+    ILOAD y         // Gets the stored value of y
+    GOTO return     // Branches to the return statement
+// Returns the result back to the calling code
+return:
+    IRETURN         // Returns back to the original calling code
+.end-method
+
+// Method to get the larger value between x and y and returns the result on the top of the stack
+.method max(x, y)
+// Checks to see whether x or y is larger
+    ILOAD x         // Gets the stored value of x
+    ILOAD y         // Gets the stored value of y
+    ISUB            // Pushes the difference between y and x to the stack
+    IFLT y          // Branches if (x - y) < 0, so y > x
+// Code run if x >= y
+x:
+    ILOAD x         // Gets the stored value of x
+    GOTO return     // Branches to the return statement
+// Code run if y > x
+y:
+    ILOAD y         // Gets the stored value of y
+    GOTO return     // Branches to the return statement
+// Returns the result back to the calling code
+return:
+    IRETURN         // Returns back to the original calling code
+.end-method
+
+// Method to calculate x*y and returns the result on the top of the stack
+.method imul(x, y)
+// Initializes the local variable for the current method
+.var
+m                   // Variable that will store an integer value
+c                   // Variable that will store an integer value
+o                   // Variable that will store an integer value
+i                   // Variable that will store an integer value
+absX                // Variable that will store an integer value
+absY                // Variable that will store an integer value
+.end-var
+
+    // Initialize variables c, o, i and temp to be 0
+    BIPUSH 0x1      // 1 in hex
+    ISTORE i        // Stores the value at the top of the stack in i
+    BIPUSH 0x0      // 0 in hex
+    DUP             // Duplicates 0 for the second variable
+    DUP             // Duplicates 0 for the third variable
+    DUP             // Duplicates 0 for the fourth variable
+    DUP             // Duplicates 0 for the fifth variable
+    ISTORE m        // Stores the value at the top of the stack in m
+    ISTORE c        // Stores the value at the top of the stack in c
+    ISTORE o        // Stores the value at the top of the stack in o
+    ISTORE absX     // Stores the value at the top of the stack in absX
+    ISTORE absY     // Stores the value at the top of the stack in absY
+
+    // Calculates the absolute value of x, so abs(x)
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD x         // Gets the stored value of x to pass in as a parameter
+    INVOKEVIRTUAL abs // Calls the method to absolute value the value at the top of the stack (returns the result value on the top of the stack)
+    ISTORE absX     // Stores the value at the top of the stack in absX
+
+    // Calculates the absolute value of y, so abs(y)
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD y         // Gets the stored value of y to pass in as a parameter
+    INVOKEVIRTUAL abs // Calls the method to absolute value the value at the top of the stack (returns the result value on the top of the stack)
+    ISTORE absY     // Stores the value at the top of the stack in absY
+
+    // Calculates the smaller value between x and y, so min(x, y)
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD absX      // Gets the stored value of abs(x) to pass in as a parameter
+    ILOAD absY      // Gets the stored value of abs(y) to pass in as a parameter
+    INVOKEVIRTUAL min // Calls the method to get the smaller of the two values at the top of the stack (returns the result value on the top of the stack)
+    ISTORE c        // Stores the value at the top of the stack in c
+
+    // Calculates the larger value between x and y, so max(x, y)
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD absX      // Gets the stored value of abs(x) to pass in as a parameter
+    ILOAD absY      // Gets the stored value of abs(y) to pass in as a parameter
+    INVOKEVIRTUAL max // Calls the method to get the larger of the two values at the top of the stack (returns the result value on the top of the stack)
+    ISTORE o        // Stores the value at the top of the stack in o
+
+// Code run if (i = 0; i < c; i++)
+startLoop:
+    ILOAD c         // Gets the stored value of c
+    ILOAD i         // Gets the stored value of i
+    ISUB            // Pushes the difference between c and i to the stack
+    IFLT endLoop    // Branches if (c - i) < 0, so i >= c
+// Code run if i < c
+bodyLoop:
+    // m = m + o
+    ILOAD m         // Gets the stored value of m to pass in as a parameter
+    ILOAD o         // Gets the stored value of max(x, y) to pass in as a parameter
+    IADD            // Pushes the sum of m and o to the stack
+    ISTORE m        // Stores the value at the top of the stack in m
+    // i++
+    BIPUSH 0x1      // 1 in hex
+    ILOAD i         // Gets the stored value of i to pass in as a parameter
+    IADD            // Pushes i++ to the stack
+    ISTORE i        // Stores the value at the top of the stack in i
+    GOTO startLoop  // Branches back to the start of the loop
+endLoop:
+
+    // Checks to see if x or y is negative but not both and negates m if one is
+    ILOAD x         // Gets the stored value of x to pass in as a parameter
+    IFLT xLT0       // Branches if x < 0
+// Checks to see if y < 0 since x >= 0 and negates if it is
+xGTE0:
+    ILOAD y         // Gets the stored value of y to pass in as a parameter
+    IFLT yLT0       // Branches if y < 0
+    GOTO skipNegation // Branches to the end of the checks
+// Negates the value of m since y < 0 and x >= 0
+yLT0:
+    ILOAD m         // Gets the stored value of m
+    INEG            // Negates the value of m and pushes to it the stack
+    ISTORE m        // Stores the value at the top of the stack in m
+    GOTO skipNegation // Branches to the end of the checks
+// Checks to see if y < 0 since x < 0 and skips negating if it is
+xLT0:
+    ILOAD y         // Gets the stored value of y to pass in as a parameter
+    IFLT skipNegation // Branches if y < 0
+    ILOAD m         // Gets the stored value of m
+    INEG            // Negates the value of m and pushes to it the stack
+    ISTORE m        // Stores the value at the top of the stack in m
+skipNegation:
+
+// Returns the result back to the calling code
+return:
+    ILOAD m         // Loads m as a return value
+    IRETURN         // Returns back to the original calling code
+.end-method
+
+// Method to calculate x^y and returns the result on the top of the stack
+.method power(x, y)
+// Initializes the local variable for the current method
+.var
+temp                // Variable that will store an integer value
+i                   // Variable that will store an integer value
+.end-var
+
+    // Checks to see if y = 0 and returns 1 if it is
+    BIPUSH 0x1      // 1 in hex
+    ISTORE temp     // Stores the value at the top of the stack in temp
+    ILOAD y         // Gets the stored value of y to pass in as a parameter
+    IFEQ return     // Branches if y == 0
+
+    // Initialize i to be 2 and temp to be x
+    BIPUSH 0x2      // 2 in hex
+    ISTORE i        // Stores the value at the top of the stack in temp
+    ILOAD x         // Gets the stored value of x
+    ISTORE temp     // Stores the value at the top of the stack in temp
+
+// Code run if (i = 0; i < y; i++)
+startLoop:
+    ILOAD y         // Gets the stored value of y
+    ILOAD i         // Gets the stored value of i
+    ISUB            // Pushes the difference between y and i to the stack
+    IFLT endLoop    // Branches if (y - i) < 0, so i >= y
+// Code run if i < y
+bodyLoop:
+    // Calculates temp * x and stores it
+    LDC_W OBJREF    // Prepares for a method call
+    ILOAD temp      // Gets the stored value of temp to pass in as a parameter
+    ILOAD x         // Gets the stored value of x to pass in as a parameter
+    INVOKEVIRTUAL imul // Calls the method to multiply the two values at the top of the stack (returns the result value on the top of the stack)
+    ISTORE temp     // Stores the value at the top of the stack in temp
+    // i++
+    BIPUSH 0x1      // 1 in hex
+    ILOAD i         // Gets the stored value of i to pass in as a parameter
+    IADD            // Pushes i++ to the stack
+    ISTORE i        // Stores the value at the top of the stack in i
+    GOTO startLoop  // Branches back to the start of the loop
+endLoop:
+
+// Returns the result back to the calling code
+return:
+    ILOAD temp      // Loads temp as a return value
+    IRETURN         // Returns back to the original calling code
+.end-method
